@@ -3,11 +3,12 @@
     <div class="px-3 py-2 lg:px-5 lg:pl-3">
       <div class="flex items-center justify-between">
         <div class="flex items-center justify-start">
-          <a href="/" class="text-xl font-bold flex items-center lg:ml-2.5">
-            <!-- <img src="/logo.svg" class="h-8 mr-2" alt="n3rdy by natur3 Logo"> -->
-            <span class="self-center whitespace-nowrap text-orange-500">BPMN Control Center</span>
-          </a>
-
+          <RouterLink :to="{name: 'home'}">
+            <div class="text-xl font-bold flex items-center lg:ml-2.5">
+              <!-- <img src="/logo.svg" class="h-8 mr-2" alt="n3rdy by natur3 Logo"> -->
+              <span class="self-center whitespace-nowrap text-orange-500">BPMN Control Center</span>
+            </div>
+          </RouterLink>
           <!-- <h1 class="text-4xl text-orange-500 mt-2">BPMN Control Center</h1> -->
         </div>
       </div>
@@ -17,3 +18,7 @@
     </div>
   </nav>
 </template>
+
+<script setup>
+  import { RouterLink } from "vue-router";
+</script>

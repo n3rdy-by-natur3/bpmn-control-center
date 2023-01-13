@@ -6,26 +6,19 @@ export const useDefinitionStore = defineStore('DefinitionStore', {
         selectedDefId: '',
         selectedVersion: '',
         selectedName: '',
-        selectedInstanceCount: 0,
-        diagram: ''
+        instanceCount: 0
     }),
     actions: {
-        async getDefinitionXml() {
-            try {
-                const result = await axios.get(`http://localhost:8080/engine-rest/process-definition/` + this.selectedDefId + `/xml`);
-
-                this.diagram = result.data.bpmn20Xml;
-            } catch (err) {
-                console.log(err);
-            }
-        },
         async getInstanceCount() {
             try {
-               const result = await axios.get(`http://localhost:8080/engine-rest/process-instance/count?processDefinitionId=` + this.selectedDefId);
-                this.selectedInstanceCount = result.data.count;
+                const result = await axios.get(`http://localhost:8080/engine-rest/process-instance/count?processDefinitionId=` + this.selectedDefId);
+                this.instanceCount = result.data.count;
             } catch(err) {
                 console.log(err);
             }
         }
-    }
+    }/*,
+    persist: {
+        storage: sessionStorage, // data in sessionStorage is cleared when the page session ends.
+    }*/
 });

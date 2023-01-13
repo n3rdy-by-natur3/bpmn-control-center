@@ -1,37 +1,44 @@
 <template>
-  <ul class="space-y-2 pb-2">
-    <li class="p-2 pb-0">
-      <PhotoIcon class="w-5 h-5 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75 inline mb-1"/>
-      <span class="ml-2">Prozessdefinitionen</span>
-    </li>
-    <li v-for="def in data" :key="def.id"
-        class="text-base text-gray-900 font-normal rounded-lg flex items-center
-        p-2 hover:bg-gray-100 group cursor-pointer"
-        :class="{ 'bg-gray-300': isSelected(def.id) }"
-        @click="showDiagram(def)">
-      <i style="width: 24px;">&nbsp;</i>
-      <span class="ml-1">{{ def.name }}</span>
-    </li>
-  </ul>
+  <div class="dropdown relative">
+    <button class="dropdown-toggle px-6 py-2.5 bg-bpmn-primary text-white font-medium text-xs leading-tight
+          rounded shadow-md hover:bg-bpmn-p-hover hover:shadow-lg focus:bg-bpmn-p-active focus:shadow-lg focus:outline-none focus:ring-0
+          active:bg-bpmn-p-active active:shadow-lg active:text-white transition duration-150 ease-in-out flex items-center whitespace-nowrap"
+        type="button"
+        id="dropdownMenuButton1"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+    >
+      {{ defText }}
+      <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
+          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+        <path fill="currentColor"
+            d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"></path>
+      </svg>
+    </button>
+    <ul class="dropdown-menu min-w-max absolute hidden bg-white text-base z-50 float-left py-2
+          list-none text-left rounded-lg shadow-lg mt-1 hidden m-0 bg-clip-padding border-none"
+        aria-labelledby="dropdownMenuButton1">
+      <li v-for="def in data" :key="def.id" @click="showData(def)">
+        <a class="dropdown-item text-sm py-2 px-4 font-normal block w-full whitespace-nowrap
+              bg-transparent text-gray-700 hover:bg-gray-100"
+            href="#">{{ def.name }}</a>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script setup>
+  import { ref } from "vue";
   import axios from "axios";
   import { useDefinitionStore } from '@/stores/DefinitionStore';
 
-  import { PhotoIcon } from '@heroicons/vue/24/solid'
-
   const store = useDefinitionStore();
+  const defaultDefText = 'Auswahl Definition';
+  const defText = ref(defaultDefText);
 
   const getProcessDefinitions = async () => {
     try {
       const result = await axios.get(`http://localhost:8080/engine-rest/process-definition?latestVersion=true`);
-      const definition = result.data[0];
-      store.$patch({
-        selectedDefId: definition.id,
-        selectedVersion: definition.version,
-        selectedName: definition.name
-      });
 
       return result.data;
     } catch (err) {
@@ -39,17 +46,16 @@
     }
   };
 
-  const showDiagram = (definition) => {
+  const showData = (definition) => {
+    defText.value = definition.name;
+
     store.$patch({
       selectedDefId: definition.id,
       selectedVersion: definition.version,
       selectedName: definition.name
     });
+    store.getInstanceCount();
   };
-
-  const isSelected  = (defId) => {
-    return defId === store.selectedDefId;
-  }
 
   const data = await getProcessDefinitions();
 </script>
