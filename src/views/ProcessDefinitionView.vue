@@ -9,7 +9,7 @@
     </div>
 
     <div class="flex flex-col">
-      <div class="m-4 h-screen flex flex-wrap">
+      <div class="m-4 flex flex-wrap">
         <div class="mr-4">
           <Suspense>
             <ProcessDefinitionList/>

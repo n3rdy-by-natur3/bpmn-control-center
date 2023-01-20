@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import ProcessInstanceView from '../views/ProcessInstanceView.vue'
 import ProcessInstanceSelectView from '../views/ProcessInstanceSelectView.vue'
 import ProcessDefinitionView from '../views/ProcessDefinitionView.vue'
 
@@ -20,6 +21,11 @@ const router = createRouter({
       path: '/processes',
       name: 'instances',
       component: ProcessInstanceSelectView
+    },
+    {
+      path: '/processes/:id',
+      name: 'instance',
+      component: ProcessInstanceView
     }
   ]
 })

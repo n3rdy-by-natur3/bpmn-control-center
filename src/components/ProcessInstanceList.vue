@@ -16,10 +16,13 @@
               <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
                 Business Key
               </th>
+              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                Startzeit
+              </th>
             </tr>
             </thead>
             <tbody>
-              <tr v-for="instance in instances.values" :key="instance.id"
+              <tr v-for="instance in instances.values" :key="instance.id" @click="goToInstanceView(instance.id)"
                   class="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100 cursor-pointer">
                 <td class="text-sm text-gray-900 font-light pr-6 pl-8 py-4 whitespace-nowrap">
                   <CheckCircleIcon v-show="!(instance.ended || instance.suspended)"
@@ -30,6 +33,9 @@
                 </td>
                 <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                   {{ instance.businessKey }}
+                </td>
+                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                  {{ useFormatDate(instance.startTime) }}
                 </td>
               </tr>
             </tbody>
@@ -71,14 +77,19 @@
 </template>
 
 <script setup>
+  import { useFormatDate } from '../composables/date.js'
   import { onMounted, ref, reactive } from "vue";
+  import { useRouter } from "vue-router";
   import { useDefinitionStore } from '@/stores/DefinitionStore';
   import axios from "axios";
   import { CheckCircleIcon } from '@heroicons/vue/24/solid'
 
   const store = useDefinitionStore();
+  const router = useRouter();
+
   const showData = ref(false);
   const instances = reactive({ values: []});
+  const instanceTimes = reactive({ values: new Map()});
   const size = 2;
   const pagination = reactive({
     current: 1,
@@ -95,6 +106,24 @@
     }
   }
 
+  const getStartTimes = async (instanceIds) => {
+    try {
+      const result = await axios.get(`http://localhost:8080/engine-rest/history/process-instance?unfinished=true&processInstanceIds=` + instanceIds);
+      return result.data;
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  const enhanceInstances = (instances, times) => {
+    for (let i of instances) {
+      const start = times.get(i.id);
+      if (start) {
+        i.startTime = start;
+      }
+    }
+  }
+
   const computePagination = () => {
     if (pagination.count > size) {
       pagination.pages = Math.ceil(pagination.count / size);
@@ -104,16 +133,18 @@
   }
 
   const changePage = (page) => {
-    console.log('click: ' + page);
     if (page !== pagination.current) {
       const index = page * size - size;
-      console.log('index: ' + index);
 
       getInstances(index).then(result => {
         pagination.current = page;
         instances.values = result;
       });
     }
+  }
+
+  const goToInstanceView = (instanceId) => {
+    router.push({ name: 'instance', params: { id: instanceId }});
   }
 
   // reset store when component is shown
@@ -125,8 +156,18 @@
     if (mutation.type === 'patch object' && store.selectedDefId !== '') {
       showData.value = true;
 
+      // at first get all process instances
       getInstances(0).then(result => {
         instances.values = result;
+        const ids = result.map(instance => instance.id).join(','); // collect all instance IDs
+
+        // with instance IDs get history data
+        getStartTimes(ids).then(list => {
+          // get all start times from list and map it to the instance ID
+          instanceTimes.values = new Map(list.map(instance => [instance.id, instance.startTime]));
+
+          enhanceInstances(instances.values, instanceTimes.values);
+        });
       });
     }
 

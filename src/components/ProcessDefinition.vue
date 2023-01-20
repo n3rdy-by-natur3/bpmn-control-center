@@ -5,8 +5,8 @@
     <div class="mr-4">Version: {{ store.selectedVersion }}</div>
     <div>Laufende Instanzen: {{ store.instanceCount }}</div>
   </div>
-  <div class="h-screen w-full">
-    <div id="diagram" class="flex-grow h-screen -m-4"></div>
+  <div class="w-full mt-6">
+    <div id="diagram" class="flex-grow h-screen"></div>
   </div>
 </template>
 
@@ -37,7 +37,8 @@
     viewer.attachTo(container);
 
     try {
-      viewer.importXML(xml);
+      await viewer.importXML(xml);
+      viewer.get('canvas').zoom('fit-viewport');
       // TODO
       /*const width = container.offsetWidth;
       const canvas = viewer.get('canvas');
