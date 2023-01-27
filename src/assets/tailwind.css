@@ -12,3 +12,7 @@
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
+
+.highlight:not(.djs-connection) .djs-visual > :nth-child(1) {
+    stroke: theme('colors.bpmn-primary') !important;
+}

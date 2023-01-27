@@ -9,7 +9,7 @@
     </div>
 
     <div class="flex flex-col">
-      <div class="m-4 h-screen flex flex-wrap">
+      <div class="m-4 h-screen flex flex-wrap scrollbar-hide">
         <div class="mr-4">
           <Suspense>
             <ProcessDefinitionList/>
@@ -26,13 +26,32 @@
               <p>Loading ...</p>
             </template>
           </Suspense>
+
+          <Suspense>
+            <InstanceDiagram/>
+            <template #fallback>
+              <p>Loading ...</p>
+            </template>
+          </Suspense>
         </div>
       </div>
     </div>
+
+
   </main>
 </template>
 
 <script setup>
   import ProcessDefinitionList from "../components/ProcessDefinitionList.vue";
-  import ProcessInstanceList from "../components/ProcessInstanceList.vue";
+  import ProcessInstanceList from "../components/instance/ProcessInstanceList.vue";
+  import InstanceDiagram from "../components/instance/InstanceDiagram.vue";
+  import { onMounted } from "vue";
+  import { useDefinitionStore } from '@/stores/DefinitionStore';
+
+  const store = useDefinitionStore();
+
+  // reset store when component is shown
+  onMounted(() => {
+    store.$reset();
+  });
 </script>

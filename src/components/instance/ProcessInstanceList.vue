@@ -2,8 +2,8 @@
   <!-- table with instance data -->
   <div class="flex flex-col" v-show="showData">
     <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-      <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
-        <div class="overflow-hidden">
+      <div class="inline-block min-w-full sm:px-6 lg:px-8">
+        <div class="overflow-hidden shadow-sm">
           <table class="min-w-full">
             <thead class="bg-white border-b">
             <tr>
@@ -77,7 +77,7 @@
 </template>
 
 <script setup>
-  import { useFormatDate } from '../composables/date.js'
+  import { useFormatDate } from '../../composables/date.js'
   import { onMounted, ref, reactive } from "vue";
   import { useRouter } from "vue-router";
   import { useDefinitionStore } from '@/stores/DefinitionStore';
@@ -90,7 +90,7 @@
   const showData = ref(false);
   const instances = reactive({ values: []});
   const instanceTimes = reactive({ values: new Map()});
-  const size = 2;
+  const size = 10;
   const pagination = reactive({
     current: 1,
     count: 0,
@@ -99,7 +99,7 @@
 
   const getInstances = async (index) => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/process-instance?processDefinitionId=` + store.selectedDefId + '&maxResults=' + size + '&firstResult=' + index);
+      const result = await axios.get(`http://localhost:8080/engine-rest/process-instance?processDefinitionId=${store.selectedDefId}&maxResults=${size}&firstResult=${index}`);
       return result.data;
     } catch(err) {
       console.log(err);
@@ -108,7 +108,7 @@
 
   const getStartTimes = async (instanceIds) => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/history/process-instance?unfinished=true&processInstanceIds=` + instanceIds);
+      const result = await axios.get(`http://localhost:8080/engine-rest/history/process-instance?unfinished=true&processInstanceIds=${instanceIds}`);
       return result.data;
     } catch(err) {
       console.log(err);
@@ -146,11 +146,6 @@
   const goToInstanceView = (instanceId) => {
     router.push({ name: 'instance', params: { id: instanceId }});
   }
-
-  // reset store when component is shown
-  onMounted(() => {
-    store.$reset();
-  });
 
   store.$subscribe((mutation, state) => {
     if (mutation.type === 'patch object' && store.selectedDefId !== '') {
