@@ -15,3 +15,11 @@ export function mapInstances(instances) {
 
     return null;
 }
+
+export function formatValue(value, type, valueInfo) {
+    if (type === 'File') {
+       return valueInfo.filename;
+    }
+
+    return value;
+}

@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-  import BpmnViewer from "./BpmnViewer.vue";
+  import BpmnViewer from "./shared/BpmnViewer.vue";
   import { onMounted } from 'vue'
   import { useDefinitionStore } from '@/stores/DefinitionStore';
 

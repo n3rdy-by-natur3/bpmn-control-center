@@ -14,9 +14,9 @@
 </template>
 
 <script setup>
-  import BpmnViewer from "../BpmnViewer.vue";
+  import BpmnViewer from "../shared/BpmnViewer.vue";
   import axios from "axios";
-  import { reactive, ref, defineAsyncComponent } from "vue";
+  import { reactive, ref } from "vue";
   import { mapInstances } from "@/composables/process";
   import { useDefinitionStore } from '@/stores/DefinitionStore';
 
