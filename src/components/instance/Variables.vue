@@ -18,16 +18,16 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(value, key) in variables" :key="key"
+              <tr v-for="variable in variables.values" :key="variable[0]"
                   class="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100">
                 <td class="text-sm text-gray-900 font-light pr-6 pl-8 py-4 whitespace-nowrap">
-                  {{ key }}
+                  {{ variable[0] }}
                 </td>
                 <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                  {{ value['type'] }}
+                  {{ variable[1]['type'] }}
                 </td>
                 <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                  {{ formatValue(value['value'], value['type'], value['valueInfo']) }}
+                  {{ formatValue(variable[1]['value'], variable[1]['type'], variable[1]['valueInfo']) }}
                 </td>
               </tr>
             </tbody>
@@ -36,11 +36,25 @@
       </div>
     </div>
   </div>
+
+  <!-- pagination -->
+  <Suspense>
+    <Pagination :size="size" :count="count" id="variables_list" @page-changed="pageChanged"/>
+    <template #fallback>
+      <p>Loading ...</p>
+    </template>
+  </Suspense>
 </template>
 
 <script setup>
+  import Pagination from "../shared/Pagination.vue";
   import axios from "axios";
   import { formatValue } from '@/composables/process.js'
+  import { ref, reactive } from "vue";
+  import { useInstanceStore } from '@/stores/InstanceStore';
+
+  const count = ref(0);
+  const variables = reactive({ values: []});
 
   const props = defineProps({
     instanceId: {
@@ -48,15 +62,27 @@
       required: true
     }
   });
+  const store = useInstanceStore();
+  const size = 10;
+
+  const pageChanged = (id, index) => {
+    console.log('VARIABLES event ID: ' + id);
+    if (id === 'variables_list') {
+      variables.values = store.getVariableSublist(index, size);
+    }
+  }
 
   const getVariables = async () => {
     try {
       const result = await axios.get(`http://localhost:8080/engine-rest/process-instance/${props.instanceId}/variables`);
-      return result.data;
+      store.saveVariables(result.data);
+      count.value = store.variables.length;
+
+      return count.value > size ? store.getVariableSublist(0, size) : store.variables;
     } catch (err) {
       console.log(err);
     }
   }
 
-  const variables = await getVariables();
+  variables.values = await getVariables();
 </script>

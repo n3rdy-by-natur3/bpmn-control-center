@@ -47,7 +47,7 @@
 
   <!-- pagination -->
   <Suspense>
-    <Pagination v-if="showData" :size="size" :count="count" id="instance_list" @page-changed="pageChanged"/>
+    <Pagination v-if="showData" :count="count" :size="size" id="instance_list" @page-changed="pageChanged"/>
     <template #fallback>
       <p>Loading ...</p>
     </template>
@@ -69,7 +69,7 @@
   const showData = ref(false);
   const instances = reactive({ values: []});
   const instanceTimes = reactive({ values: new Map()});
-  const size = 2;
+  const size = 10;
   const count = ref(0);
 
   const getInstances = async (index) => {

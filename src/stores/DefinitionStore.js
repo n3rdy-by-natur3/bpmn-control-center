@@ -3,10 +3,10 @@ import axios from "axios";
 
 export const useDefinitionStore = defineStore('DefinitionStore', {
     state: () => ({
-        selectedDefId: '',
-        selectedVersion: '',
-        selectedName: '',
-        instanceCount: 0
+        selectedDefId: '', // selected process
+        selectedVersion: '', // version of the selected process
+        selectedName: '', // name of the selected process
+        instanceCount: 0 // number of instances for the selected process
     }),
     actions: {
         async getInstanceCount() {

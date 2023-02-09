@@ -77,7 +77,8 @@ import { reactive, watch } from "vue";
   watch(
       () => props.count,
       (count, prevCount) => {
+        console.log("PAGINATION props count changed: " + props.count);
         computePagination();
-      }
+      }, { immediate: true }
   )
 </script>
