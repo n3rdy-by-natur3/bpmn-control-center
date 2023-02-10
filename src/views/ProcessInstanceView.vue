@@ -16,13 +16,13 @@
             <a href="#tabs-diagram" class="nav-link block font-medium text-xs leading-tight uppercase border-x-0 border-t-0
                border-b-2 border-transparent px-6 py-3 my-2 hover:border-transparent hover:bg-gray-100 focus:border-transparent active"
                id="tabs-diagram-tab" data-bs-toggle="pill" data-bs-target="#tabs-diagram" role="tab" aria-controls="tabs-diagram"
-               aria-selected="true">Activity Instances</a>
+               aria-selected="true">Activity Instanzen</a>
           </li>
           <li class="nav-item" role="presentation">
             <a href="#tabs-variables" class="nav-link block font-medium text-xs leading-tight uppercase border-x-0 border-t-0
                border-b-2 border-transparent px-6 py-3 my-2 hover:border-transparent hover:bg-gray-100 focus:border-transparent"
                id="tabs-variables-tab" data-bs-toggle="pill" data-bs-target="#tabs-variables" role="tab"
-               aria-controls="tabs-variables" aria-selected="false">Variables</a>
+               aria-controls="tabs-variables" aria-selected="false">Variablen</a>
           </li>
           <li class="nav-item" role="presentation" v-show="showIncidents">
             <a href="#tabs-incidents" class="nav-link block font-medium text-xs leading-tight uppercase border-x-0 border-t-0
@@ -36,6 +36,13 @@
                id="tabs-user-tab" data-bs-toggle="pill" data-bs-target="#tabs-user" role="tab"
                aria-controls="tabs-user" aria-selected="false">User Tasks</a>
           </li>
+          <li class="nav-item" role="presentation">
+            <a href="#tabs-user" class="nav-link block font-medium text-xs leading-tight uppercase border-x-0 border-t-0
+               border-b-2 border-transparent px-6 py-3 my-2 hover:border-transparent hover:bg-gray-100 focus:border-transparent"
+               id="tabs-user-tab" data-bs-toggle="pill" data-bs-target="#tabs-user" role="tab"
+               aria-controls="tabs-user" aria-selected="false">Aufgerufene Prozesse</a>
+          </li>
+
         </ul>
         <div class="tab-content" id="tabs-tabContent">
           <div class="tab-pane fade show active" id="tabs-diagram" role="tabpanel" aria-labelledby="tabs-diagram-tab">
@@ -63,7 +70,15 @@
             </Suspense>
           </div>
           <div class="tab-pane fade" id="tabs-user" role="tabpanel" aria-labelledby="tabs-user-tab">
-            User Tasks
+            <Suspense>
+              <UserTasks :instance-id="instanceId"/>
+              <template #fallback>
+                <p>Loading ...</p>
+              </template>
+            </Suspense>
+          </div>
+          <div class="tab-pane fade" id="tabs-user" role="tabpanel" aria-labelledby="tabs-user-tab">
+
           </div>
         </div>
       </div>
@@ -75,6 +90,7 @@
   import ActivityInstance from "../components/instance/ActivityInstance.vue";
   import Variables from "../components/instance/Variables.vue";
   import Incidents from "../components/instance/Incidents.vue";
+  import UserTasks from "../components/instance/UserTasks.vue";
 
   import {onMounted, ref} from "vue";
   import { useRoute } from "vue-router";

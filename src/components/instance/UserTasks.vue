@@ -1,6 +1,6 @@
 <template>
   <!-- table with instance data -->
-  <div class="flex flex-col" v-show="showData">
+  <div class="flex flex-col">
     <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full sm:px-6 lg:px-8">
         <div class="overflow-hidden shadow-sm">
@@ -8,45 +8,63 @@
             <thead class="bg-white border-b">
             <tr>
               <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Incident ID
+                Activity
               </th>
               <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Activity ID
+                Assignee
               </th>
               <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Incident Type
+                Owner
               </th>
               <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Incident Message
+                Creation Date
               </th>
               <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Configuration
+                Due Date
               </th>
               <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Incident Time
+                Follow Up Date
+              </th>
+              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                Priority
+              </th>
+              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                Delegatrion State
+              </th>
+              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
+                Task ID
               </th>
             </tr>
             </thead>
             <tbody>
-            <tr v-for="instance in instances.values" :key="instance.id" @click="goToInstanceView(instance.id)"
+            <tr v-for="task in tasks" :key="task.id" @click="goToInstanceView(instance.id)"
                 class="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100 cursor-pointer">
-              <td class="text-sm text-gray-900 font-light pr-6 pl-8 py-4 whitespace-nowrap">
-                {{ instance.id }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-bpmn-p-hover">
-                {{ instance.activityId }}
+              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                {{ task.name }}
               </td>
               <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ instance.incidentType }}
+                {{ task.assignee }}
               </td>
               <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ instance.incidentMessage }}
+                {{ task.owner }}
               </td>
               <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ instance.configuration }}
+                {{ useFormatDate(task.created) }}
               </td>
               <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ useFormatDate(instance.incidentTimestamp) }}
+                {{ useFormatDate(task.due) }}
+              </td>
+              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                {{ useFormatDate(task.followUp) }}
+              </td>
+              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                {{ task.priority }}
+              </td>
+              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                {{ task.delegationState }}
+              </td>
+              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                {{ task.id }}
               </td>
             </tr>
             </tbody>
@@ -68,14 +86,14 @@
     }
   });
 
-  const getIncidents = async () => {
+  const getTasks = async () => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/incident/?processInstanceId=${props.instanceId}`);
+      const result = await axios.get(`http://localhost:8080/engine-rest/task/?processInstanceId=${props.instanceId}`);
       return result.data;
     } catch (err) {
       console.log(err);
     }
   }
 
-  const incidents = await getIncidents();
+  const tasks = await getTasks();
 </script>
