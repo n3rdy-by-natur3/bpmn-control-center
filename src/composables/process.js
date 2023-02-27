@@ -23,3 +23,7 @@ export function formatValue(value, type, valueInfo) {
 
     return value;
 }
+
+export function filterCalledInstances(instances) {
+    return instances.filter(instance => instance.activityType === 'callActivity');
+}

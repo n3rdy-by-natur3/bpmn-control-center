@@ -95,8 +95,10 @@
   import {onMounted, ref} from "vue";
   import { useRoute } from "vue-router";
   import axios from "axios";
+  import { useInstanceStore } from '@/stores/InstanceStore';
 
   const route = useRoute();
+  const store = useInstanceStore();
   const instanceId = route.params.id;
   const showIncidents = ref(false);
 
@@ -110,6 +112,8 @@
   }
 
   onMounted(() => {
+    store.$reset();
+
     getIncidentCount().then(count => {
       console.log("count: " + count);
       showIncidents.value = count > 0;

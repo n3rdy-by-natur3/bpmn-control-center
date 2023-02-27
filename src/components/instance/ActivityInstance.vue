@@ -10,7 +10,8 @@
 <script setup>
   import BpmnViewer from "../shared/BpmnViewer.vue";
   import axios from "axios";
-  import { mapInstances } from '@/composables/process.js'
+  import { mapInstances, filterCalledInstances } from '@/composables/process.js'
+  import { useInstanceStore } from '@/stores/InstanceStore';
 
   const props = defineProps({
     instanceId: {
@@ -19,9 +20,12 @@
     }
   });
 
+  const store = useInstanceStore();
+
   const getActivityInstance = async () => {
     try {
       const result = await axios.get(`http://localhost:8080/engine-rest/process-instance/${props.instanceId}/activity-instances`);
+      store.called_instances = filterCalledInstances(result.data.childActivityInstances); // stores called instances
       return mapInstances(result.data.childActivityInstances);
     } catch (err) {
       console.log(err);

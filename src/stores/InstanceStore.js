@@ -2,7 +2,8 @@ import { defineStore } from 'pinia';
 
 export const useInstanceStore = defineStore('InstanceStore', {
     state: () => ({
-        variables: []
+        variables: [],
+        called_instances: []
     }),
     actions: {
         saveVariables(variables) {

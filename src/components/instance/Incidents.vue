@@ -1,5 +1,4 @@
 <template>
-  <!-- table with instance data -->
   <div class="flex flex-col" v-show="showData">
     <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full sm:px-6 lg:px-8">
