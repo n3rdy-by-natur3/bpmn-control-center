@@ -1,49 +1,32 @@
 <template>
-  <!-- table with instance data -->
-  <div class="flex flex-col" v-show="showData">
-    <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-      <div class="inline-block min-w-full sm:px-6 lg:px-8">
-        <div class="overflow-hidden shadow-sm">
-          <table class="min-w-full">
-            <thead class="bg-white border-b">
-            <tr>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Aktiv
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                ID
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Business Key
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Startzeit
-              </th>
-            </tr>
-            </thead>
-            <tbody>
-              <tr v-for="instance in instances.values" :key="instance.id" @click="goToInstanceView(instance.id)"
-                  class="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100 cursor-pointer">
-                <td class="text-sm text-gray-900 font-light pr-6 pl-8 py-4 whitespace-nowrap">
-                  <CheckCircleIcon v-show="!(instance.ended || instance.suspended)"
-                      class="w-5 h-5 text-green-700 flex-shrink-0 inline"/>
-                </td>
-                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-bpmn-p-hover">
-                  {{ instance.id }}
-                </td>
-                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                  {{ instance.businessKey }}
-                </td>
-                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                  {{ useFormatDate(instance.startTime) }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+  <table class="min-w-full divide-y divide-gray-200" v-show="showData">
+    <thead>
+      <tr>
+        <th class="bg-gray-50 px-6 py-3 text-left text-sm font-semibold text-gray-900" scope="col">Aktiv</th>
+        <th class="bg-gray-50 px-6 py-3 text-left text-sm font-semibold text-gray-900" scope="col">ID</th>
+        <th class="hidden bg-gray-50 px-6 py-3 text-left text-sm font-semibold text-gray-900 md:block" scope="col">Business Key</th>
+        <th class="bg-gray-50 px-6 py-3 text-left text-sm font-semibold text-gray-900" scope="col">Startzeit</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-200 bg-white">
+      <tr  v-for="instance in instances.values" :key="instance.id" @click="goToInstanceView(instance.id)"
+           class="bg-white hover:bg-gray-100 cursor-pointer">
+        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+          <CheckCircleIcon v-show="!(instance.ended || instance.suspended)"
+                           class="w-5 h-5 text-green-700 flex-shrink-0 inline"/>
+        </td>
+        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+          {{ instance.id }}
+        </td>
+        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+          {{ instance.businessKey }}
+        </td>
+        <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+          {{ useFormatDate(instance.startTime) }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
   <!-- pagination -->
   <Suspense>
@@ -55,7 +38,7 @@
 </template>
 
 <script setup>
-  import { useFormatDate } from '../../composables/date.js'
+  import { useFormatDate } from '@/composables/date'
   import Pagination from "../shared/Pagination.vue";
   import { ref, reactive } from "vue";
   import { useRouter } from "vue-router";

@@ -1,53 +1,30 @@
 <template>
-  <div class="flex flex-col" v-show="showData">
-    <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-      <div class="inline-block min-w-full sm:px-6 lg:px-8">
-        <div class="overflow-hidden shadow-sm">
-          <table class="min-w-full">
-            <thead class="bg-white border-b">
+  <div class="px-4 sm:px-6 lg:px-8">
+    <div class="mt-8 flow-root">
+      <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead>
             <tr>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Incident ID
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Activity ID
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Incident Type
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Incident Message
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Configuration
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Incident Time
-              </th>
+              <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Incident ID</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Activity ID</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Incident Type</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Incident Message</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Configuration</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Incident Time</th>
             </tr>
             </thead>
-            <tbody>
-            <tr v-for="instance in instances.values" :key="instance.id" @click="goToInstanceView(instance.id)"
-                class="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100 cursor-pointer">
-              <td class="text-sm text-gray-900 font-light pr-6 pl-8 py-4 whitespace-nowrap">
-                {{ instance.id }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-bpmn-p-hover">
-                {{ instance.activityId }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ instance.incidentType }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ instance.incidentMessage }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ instance.configuration }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ useFormatDate(instance.incidentTimestamp) }}
-              </td>
+            <tbody class="divide-y divide-gray-200">
+            <tr v-for="instance in instances.values" :key="instance.id" @click="goToInstanceView(instance.id)">
+              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500 sm:pl-0">{{ instance.id }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ instance.activityId }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ instance.incidentType }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ instance.incidentMessage }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ instance.configuration }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ useFormatDate(instance.incidentTimestamp) }}</td>
             </tr>
+
+            <!-- More people... -->
             </tbody>
           </table>
         </div>

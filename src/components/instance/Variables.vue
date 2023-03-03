@@ -1,49 +1,38 @@
 <template>
-  <div class="flex flex-col">
-    <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-      <div class="inline-block w-full sm:px-6 lg:px-8">
-        <div class="overflow-hidden shadow-sm">
-          <table class="w-full">
-            <thead class="bg-white border-b">
-              <tr>
-                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                  Name
-                </th>
-                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                  Type
-                </th>
-                <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                  Value
-                </th>
-              </tr>
+  <div class="px-4 sm:px-6 lg:px-8">
+    <div class="mt-8 flow-root">
+      <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead>
+            <tr>
+              <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Name</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Type</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Value</th>
+            </tr>
             </thead>
-            <tbody>
-              <tr v-for="variable in variables.values" :key="variable[0]"
-                  class="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100">
-                <td class="text-sm text-gray-900 font-light pr-6 pl-8 py-4 whitespace-nowrap">
-                  {{ variable[0] }}
-                </td>
-                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                  {{ variable[1]['type'] }}
-                </td>
-                <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                  {{ formatValue(variable[1]['value'], variable[1]['type'], variable[1]['valueInfo']) }}
-                </td>
-              </tr>
+            <tbody class="divide-y divide-gray-200">
+            <tr  v-for="variable in variables.values" :key="variable[0]">
+              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500 sm:pl-0">{{ variable[0] }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ variable[1]['type'] }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ formatValue(variable[1]['value'], variable[1]['type'], variable[1]['valueInfo']) }}</td>
+            </tr>
+
+            <!-- More people... -->
             </tbody>
           </table>
+
+          <!-- pagination -->
+          <Suspense>
+            <Pagination :size="size" :count="count" id="variables_list" @page-changed="pageChanged"/>
+            <template #fallback>
+              <p>Loading ...</p>
+            </template>
+          </Suspense>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- pagination -->
-  <Suspense>
-    <Pagination :size="size" :count="count" id="variables_list" @page-changed="pageChanged"/>
-    <template #fallback>
-      <p>Loading ...</p>
-    </template>
-  </Suspense>
 </template>
 
 <script setup>

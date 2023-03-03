@@ -1,17 +1,10 @@
 <template>
-  <main>
-    <div class="px-4 bg-white block sm:flex items-center justify-between border-b border-gray-200">
-      <div class="mb-1 w-full">
-        <div class="mb-4">
-          <h1 class="text-xl sm:text-2xl font-semibold text-gray-900">Home</h1>
-        </div>
-      </div>
-    </div>
-  </main>
+  <PageTitle title="Home"/>
 </template>
 
 <script setup>
   import { useDefinitionStore } from '@/stores/DefinitionStore';
+  import PageTitle from "../components/shared/PageTitle.vue";
 
   const store = useDefinitionStore();
   store.$reset();

@@ -1,72 +1,35 @@
 <template>
-  <!-- table with instance data -->
-  <div class="flex flex-col">
-    <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-      <div class="inline-block min-w-full sm:px-6 lg:px-8">
-        <div class="overflow-hidden shadow-sm">
-          <table class="min-w-full">
-            <thead class="bg-white border-b">
+  <div class="px-4 sm:px-6 lg:px-8">
+    <div class="mt-8 flow-root">
+      <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead>
             <tr>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Activity
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Assignee
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Owner
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Creation Date
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Due Date
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Follow Up Date
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Priority
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Delegatrion State
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Task ID
-              </th>
+              <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Activity</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Assignee</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Owner</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Creation Date</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Due Date</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Follow Up Date</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Priority</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Delegatrion State</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Task ID</th>
             </tr>
             </thead>
-            <tbody>
-            <tr v-for="task in tasks" :key="task.id" @click="goToInstanceView(instance.id)"
-                class="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100 cursor-pointer">
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ task.name }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ task.assignee }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ task.owner }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ useFormatDate(task.created) }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ useFormatDate(task.due) }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ useFormatDate(task.followUp) }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ task.priority }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ task.delegationState }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ task.id }}
-              </td>
+            <tbody class="divide-y divide-gray-200">
+            <tr v-for="task in tasks" :key="task.id" @click="goToInstanceView(instance.id)">
+              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500 sm:pl-0">{{ task.name }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500"> {{ task.assignee }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ task.owner }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ useFormatDate(task.created) }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ useFormatDate(task.due) }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ useFormatDate(task.followUp) }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ task.priority }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ task.delegationState }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ task.id }}</td>
             </tr>
+            <!-- More people... -->
             </tbody>
           </table>
         </div>

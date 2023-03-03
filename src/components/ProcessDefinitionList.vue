@@ -1,29 +1,27 @@
 <template>
-  <div class="dropdown relative">
-    <button class="dropdown-toggle px-6 py-2.5 bg-bpmn-primary text-white font-medium text-xs leading-tight
-          rounded shadow-md hover:bg-bpmn-p-hover hover:shadow-lg focus:bg-bpmn-p-active focus:shadow-lg focus:outline-none focus:ring-0
-          active:bg-bpmn-p-active active:shadow-lg active:text-white transition duration-150 ease-in-out flex items-center whitespace-nowrap"
-        type="button"
-        id="dropdownMenuButton1"
-        data-bs-toggle="dropdown"
-        aria-expanded="false"
+  <div class="relative inline-block text-left">
+    <div>
+      <button @click="toggle" type="button" class="inline-flex w-full justify-center rounded-md bg-cyan-700
+      px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-cyan-600 focus:bg-cyan-800" id="menu-button" aria-expanded="true" aria-haspopup="true">
+        {{ defText }}
+        <ChevronDownIcon class="-mr-1 ml-2 h-5 w-5"/>
+      </button>
+    </div>
+
+    <transition
+        enter-active-class="transition ease-out duration-100" enter-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100"
+        leave-active-class="transition ease-in duration-75" leave-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95"
     >
-      {{ defText }}
-      <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="caret-down" class="w-2 ml-2" role="img"
-          xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
-        <path fill="currentColor"
-            d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"></path>
-      </svg>
-    </button>
-    <ul class="dropdown-menu min-w-max absolute hidden bg-white text-base z-50 float-left py-2
-          list-none text-left rounded-lg shadow-lg mt-1 hidden m-0 bg-clip-padding border-none"
-        aria-labelledby="dropdownMenuButton1">
-      <li v-for="def in data" :key="def.id" @click="showData(def)">
-        <a class="dropdown-item text-sm py-2 px-4 font-normal block w-full whitespace-nowrap
-              bg-transparent text-gray-700 hover:bg-gray-100"
-            href="#">{{ def.name }}</a>
-      </li>
-    </ul>
+      <div v-if="isOpen" class="absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+        <div class="py-1" role="none">
+          <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
+          <a v-for="def in data" :key="def.id" @click="showData(def)" href="#" class="text-gray-700 hover:bg-gray-100 block px-4 py-2 text-sm"
+             role="menuitem" tabindex="-1">
+            {{ def.name }}
+          </a>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -31,10 +29,17 @@
   import { ref } from "vue";
   import axios from "axios";
   import { useDefinitionStore } from '@/stores/DefinitionStore';
+  import { ChevronDownIcon } from '@heroicons/vue/24/solid';
 
   const store = useDefinitionStore();
   const defaultDefText = 'Auswahl Definition';
   const defText = ref(defaultDefText);
+
+  const isOpen = ref(false);
+
+  const toggle = () => {
+    isOpen.value = !isOpen.value;
+  }
 
   const getProcessDefinitions = async () => {
     try {
@@ -55,6 +60,7 @@
       selectedName: definition.name
     });
     store.getInstanceCount();
+    isOpen.value = false;
   };
 
   const data = await getProcessDefinitions();

@@ -16,3 +16,11 @@
 .highlight:not(.djs-connection) .djs-visual > :nth-child(1) {
     stroke: theme('colors.bpmn-primary') !important;
 }
+
+#nav-left nav a.router-link-active {
+    @apply bg-cyan-800 text-white;
+}
+
+#nav-left nav a:not(.router-link-active) {
+    @apply text-cyan-100 hover:text-white hover:bg-cyan-600;
+}

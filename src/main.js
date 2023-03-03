@@ -5,7 +5,6 @@ import { createPinia } from 'pinia';
 import router from './router';
 
 import './assets/tailwind.css';
-import 'tw-elements';
 
 const pinia = createPinia();
 //pinia.use(piniaPluginPersistedState);

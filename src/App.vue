@@ -1,19 +1,19 @@
 <template>
-  <SiteNavigation/>
-
-  <div class="flex overflow-hidden bg-white pt-16">
+  <div class="min-h-full">
     <LeftBarNavigation/>
 
-    <div class="bg-gray-900 opacity-50 hidden fixed inset-0 z-10" id="sidebarBackdrop"></div>
+    <div class="flex flex-1 flex-col lg:pl-64">
+      <TopBar/>
 
-    <div id="main-content" class="w-full bg-gray-50 relative overflow-y-auto lg:ml-64">
-      <RouterView />
+      <main class="flex-1 pb-8">
+        <RouterView />
+      </main>
     </div>
   </div>
 </template>
 
 <script setup>
-  import SiteNavigation from "@/components/SiteNavigation.vue";
+  import TopBar from "@/components/TopBar.vue";
   import LeftBarNavigation from "@/components/LeftBarNavigation.vue";
   import { RouterView } from "vue-router";
 </script>

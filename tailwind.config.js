@@ -1,8 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-      './index.html', './src/**/*.{vue,js,ts,jsx,tsx}',
-      './node_modules/tw-elements/dist/js/**/*.js'],
+      './index.html', './src/**/*.{vue,js,ts,jsx,tsx}'
+  ],
   theme: {
     extend: {
       colors: {
@@ -19,10 +19,13 @@ module.exports = {
       container: {
         padding: "2rem",
         center: true
-      }
-    },
+      },
+      minHeight: (theme) => ({
+        ...theme('spacing'),
+      })
+    }
   },
   plugins: [
-    require('tw-elements/dist/plugin')
-  ],
+    require('@tailwindcss/forms')
+  ]
 }

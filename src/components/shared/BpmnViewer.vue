@@ -60,7 +60,7 @@
               bottom: 15,
               right: 15
             },
-            html: '<div class="bg-bpmn-primary text-white py-1.5 px-2.5 text-center rounded-full text-xs">' + value + '</div>'
+            html: '<div class="bg-cyan-700 text-white py-1.5 px-2.5 text-center rounded-full text-xs">' + value + '</div>'
           });
         }
       }
