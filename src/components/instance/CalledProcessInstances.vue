@@ -1,34 +1,21 @@
 <template>
-  <div class="flex flex-col" v-show="showData">
-    <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-      <div class="inline-block min-w-full sm:px-6 lg:px-8">
-        <div class="overflow-hidden shadow-sm">
-          <table class="min-w-full">
-            <thead class="bg-white border-b">
+  <div class="px-4 sm:px-6 lg:px-8">
+    <div class="mt-8 flow-root">
+      <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+        <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+          <table class="min-w-full divide-y divide-gray-300">
+            <thead>
             <tr>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Aufgerufener Prozess
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Prozessdefinition
-              </th>
-              <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                Aktivität
-              </th>
+              <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Aufgerufener Prozess</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Prozessdefinition</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Aktivität</th>
             </tr>
             </thead>
-            <tbody>
-            <tr v-for="activity in activities.values" :key="instance.id" @click="goToInstanceView(instance.id)"
-                class="bg-white border-b transition duration-300 ease-in-out hover:bg-gray-100 cursor-pointer">
-              <td class="text-sm text-gray-900 font-light pr-6 pl-8 py-4 whitespace-nowrap">
-                {{ activity.processInstanceId }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-bpmn-p-hover">
-                {{ activity.activityName }}
-              </td>
-              <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                {{ activity.activityId }}
-              </td>
+            <tbody class="divide-y divide-gray-200">
+            <tr v-for="activity in activities" :key="activity.activityId">
+              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500 sm:pl-0">{{ activity.processInstanceId }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ activity.activityName }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ activity.activityId }}</td>
             </tr>
             </tbody>
           </table>
@@ -39,5 +26,9 @@
 </template>
 
 <script setup>
+  /* data is loaded by ActivityInstance component, so we avoid to call the API twice */
+  import { useInstanceStore } from '@/stores/InstanceStore';
 
+  const store = useInstanceStore();
+  const activities = store.called_instances;
 </script>

@@ -31,12 +31,15 @@
                   'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': currentTab !== 'tabs-variables' }"
                      class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">Variablen</a>
 
-                  <a href="#tabs-incidents" @click="changeTab" v-show="showIncidents" :class="{ 'border-cyan-700 text-cyan-700 pointer-events-none': currentTab === 'tabs-incidents',
+                  <a href="#tabs-incidents" @click="changeTab" v-show="hasIncidents" :class="{ 'border-cyan-700 text-cyan-700 pointer-events-none': currentTab === 'tabs-incidents',
                   'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': currentTab !== 'tabs-incidents' }"
                      class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">Incidents</a>
 
-                  <a href="#tabs-user" @click="changeTab" :class="{ 'border-cyan-700 text-cyan-700 pointer-events-none': currentTab === 'tabs-user',
-                  'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': currentTab !== 'tabs-user' }"
+                  <a href="#tabs-tasks" @click="changeTab" v-show="hasTasks" :class="{ 'border-cyan-700 text-cyan-700 pointer-events-none': currentTab === 'tabs-tasks',
+                  'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': currentTab !== 'tabs-tasks' }"
+                     class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">User Tasks</a>
+                  <a href="#tabs-called" @click="changeTab" v-show="hasCalledInstances" :class="{ 'border-cyan-700 text-cyan-700 pointer-events-none': currentTab === 'tabs-called',
+                  'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': currentTab !== 'tabs-called' }"
                      class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">Aufgerufene Prozesse</a>
                 </nav>
               </div>
@@ -59,28 +62,32 @@
                   </template>
                 </Suspense>
               </div>
-              <div v-show="currentTab === 'tabs-incidents'" class="tab-pane fade" id="tabs-incidents" role="tabpanel" aria-labelledby="tabs-incidents-tab"  v-if="showIncidents">
-                <Suspense>
+              <div v-show="currentTab === 'tabs-incidents'" class="tab-pane fade" id="tabs-incidents" role="tabpanel" aria-labelledby="tabs-incidents-tab"  v-if="hasIncidents">
+                <Suspense v-if="hasIncidents">
                   <Incidents :instance-id="instanceId"/>
                   <template #fallback>
                     <p>Loading ...</p>
                   </template>
                 </Suspense>
               </div>
-              <div v-show="currentTab === 'tabs-user'" class="tab-pane fade" id="tabs-user" role="tabpanel" aria-labelledby="tabs-user-tab">
-                <Suspense>
+              <div v-show="currentTab === 'tabs-tasks'" class="tab-pane fade" id="tabs-tasks" role="tabpanel" aria-labelledby="tabs-tasks-tab">
+                <Suspense v-if="hasTasks">
                   <UserTasks :instance-id="instanceId"/>
                   <template #fallback>
                     <p>Loading ...</p>
                   </template>
                 </Suspense>
               </div>
-              <div class="tab-pane fade" id="tabs-user" role="tabpanel" aria-labelledby="tabs-user-tab">
-
+              <div v-show="currentTab === 'tabs-called'" class="tab-pane fade" id="tabs-called" role="tabpanel" aria-labelledby="tabs-called-tab">
+                <Suspense v-if="hasCalledInstances">
+                  <CalledProcessInstances :instance-id="instanceId"/>
+                  <template #fallback>
+                    <p>Loading ...</p>
+                  </template>
+                </Suspense>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -93,6 +100,7 @@
   import Incidents from "../components/instance/Incidents.vue";
   import UserTasks from "../components/instance/UserTasks.vue";
   import PageTitle from "../components/shared/PageTitle.vue";
+  import CalledProcessInstances from "../components/instance/CalledProcessInstances.vue";
 
   import {onMounted, ref} from "vue";
   import { useRoute } from "vue-router";
@@ -102,12 +110,23 @@
   const route = useRoute();
   const store = useInstanceStore();
   const instanceId = route.params.id;
-  const showIncidents = ref(false);
+  const hasIncidents = ref(false);
+  const hasTasks = ref(false);
+  const hasCalledInstances = ref(false);
   const currentTab = ref("tabs-diagram");
 
   const getIncidentCount = async () => {
     try {
       const result = await axios.get(`http://localhost:8080/engine-rest/incident/count?processInstanceId=${instanceId}`);
+      return result.data.count;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  const getUserTaskCount = async () => {
+    try {
+      const result = await axios.get(`http://localhost:8080/engine-rest/task/count?processInstanceId=${instanceId}`);
       return result.data.count;
     } catch (err) {
       console.log(err);
@@ -129,8 +148,17 @@
     store.$reset();
 
     getIncidentCount().then(count => {
-      console.log("count: " + count);
-      showIncidents.value = count > 0;
+      hasIncidents.value = count > 0;
     });
+
+    getUserTaskCount().then( count => {
+      hasTasks.value = count > 0;
+    });
+  });
+
+  store.$subscribe((mutation, state) => {
+    if (mutation.type === 'direct' && mutation.events.key === 'called_instances' && mutation.events.newValue.length > 0) {
+      hasCalledInstances.value = true;
+    }
   });
 </script>

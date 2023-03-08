@@ -17,8 +17,6 @@
               <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ variable[1]['type'] }}</td>
               <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ formatValue(variable[1]['value'], variable[1]['type'], variable[1]['valueInfo']) }}</td>
             </tr>
-
-            <!-- More people... -->
             </tbody>
           </table>
 

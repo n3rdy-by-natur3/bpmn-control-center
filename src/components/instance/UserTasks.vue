@@ -51,7 +51,7 @@
 
   const getTasks = async () => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/task/?processInstanceId=${props.instanceId}`);
+      const result = await axios.get(`http://localhost:8080/engine-rest/task?processInstanceId=${props.instanceId}`);
       return result.data;
     } catch (err) {
       console.log(err);
