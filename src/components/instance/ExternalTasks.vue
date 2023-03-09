@@ -6,32 +6,28 @@
           <table class="min-w-full divide-y divide-gray-300">
             <thead>
             <tr>
-              <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Aktivität</th>
-              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Assignee</th>
-              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Owner</th>
-              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Erstellt</th>
+              <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Aktivitäts ID</th>
               <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Ablaufdatum</th>
-              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Folgedatum</th>
               <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Priorität</th>
-              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Status</th>
               <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Task ID</th>
               <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Aktiv</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Wiederholungen</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Fehlermeldung</th>
+              <th scope="col" class="py-3.5 px-3 text-left text-sm font-semibold text-gray-900">Topic</th>
             </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
             <tr v-for="task in tasks" :key="task.id" @click="goToInstanceView(task.id)">
-              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500 sm:pl-0">{{ task.name }}</td>
-              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500"> {{ task.assignee }}</td>
-              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ task.owner }}</td>
-              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ useFormatDate(task.created) }}</td>
-              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ useFormatDate(task.due) }}</td>
-              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ useFormatDate(task.followUp) }}</td>
+              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500 sm:pl-0">{{ task.activityId }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ useFormatDate(task.lockExpirationTime) }}</td>
               <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ task.priority }}</td>
-              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ task.delegationState }}</td>
               <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ task.id }}</td>
               <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500 sm:pl-0">
                 <ActiveIcon :active="!task.suspended"/>
               </td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ task.retries }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ task.errorMessage }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ task.topicName }}</td>
             </tr>
             <!-- More people... -->
             </tbody>
@@ -56,7 +52,7 @@
 
   const getTasks = async () => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/task?processInstanceId=${props.instanceId}`);
+      const result = await axios.get(`http://localhost:8080/engine-rest/external-task?processInstanceId=${props.instanceId}`);
       return result.data;
     } catch (err) {
       console.log(err);

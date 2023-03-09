@@ -44,6 +44,9 @@
                   <a href="#tabs-jobs" @click="changeTab" v-show="showData.job" :class="{ 'border-cyan-700 text-cyan-700 pointer-events-none': currentTab === 'tabs-jobs',
                   'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': currentTab !== 'tabs-jobs' }"
                      class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">Jobs</a>
+                  <a href="#tabs-external" @click="changeTab" v-show="showData['external-task']" :class="{ 'border-cyan-700 text-cyan-700 pointer-events-none': currentTab === 'tabs-external',
+                  'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': currentTab !== 'tabs-external' }"
+                     class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">External Tasks</a>
                 </nav>
               </div>
             </div>
@@ -97,6 +100,14 @@
                   </template>
                 </Suspense>
               </div>
+              <div v-show="currentTab === 'tabs-external'" class="tab-pane fade" id="tabs-external" role="tabpanel" aria-labelledby="tabs-external-tab">
+                <Suspense v-if="showData['external-task']">
+                  <ExternalTasks :instance-id="instanceId"/>
+                  <template #fallback>
+                    <p>Loading ...</p>
+                  </template>
+                </Suspense>
+              </div>
             </div>
           </div>
         </div>
@@ -113,6 +124,7 @@
   import PageTitle from "../components/shared/PageTitle.vue";
   import CalledProcessInstances from "../components/instance/CalledProcessInstances.vue";
   import Jobs from "../components/instance/Jobs.vue";
+  import ExternalTasks from "../components/instance/ExternalTasks.vue";
 
   import { onMounted, ref, reactive, toRaw } from "vue";
   import { useRoute } from "vue-router";
@@ -125,8 +137,8 @@
   const hasCalledInstances = ref(false);
   const currentTab = ref("tabs-diagram");
 
-  const showData = reactive({incident: false, task: false, job: false });
-  const tabs = [ 'incident', 'task', 'job' ]; // helper variable
+  const showData = reactive({incident: false, task: false, job: false, 'external-task': false });
+  const tabs = [ 'incident', 'task', 'job', 'external-task' ]; // helper variable
 
   /* generic function for calling a count endpoint */
   const getCount = async (type) => {
