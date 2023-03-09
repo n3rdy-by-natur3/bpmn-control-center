@@ -31,16 +31,19 @@
                   'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': currentTab !== 'tabs-variables' }"
                      class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">Variablen</a>
 
-                  <a href="#tabs-incidents" @click="changeTab" v-show="hasIncidents" :class="{ 'border-cyan-700 text-cyan-700 pointer-events-none': currentTab === 'tabs-incidents',
+                  <a href="#tabs-incidents" @click="changeTab" v-show="showData.incident" :class="{ 'border-cyan-700 text-cyan-700 pointer-events-none': currentTab === 'tabs-incidents',
                   'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': currentTab !== 'tabs-incidents' }"
                      class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">Incidents</a>
 
-                  <a href="#tabs-tasks" @click="changeTab" v-show="hasTasks" :class="{ 'border-cyan-700 text-cyan-700 pointer-events-none': currentTab === 'tabs-tasks',
+                  <a href="#tabs-tasks" @click="changeTab" v-show="showData.task" :class="{ 'border-cyan-700 text-cyan-700 pointer-events-none': currentTab === 'tabs-tasks',
                   'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': currentTab !== 'tabs-tasks' }"
                      class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">User Tasks</a>
                   <a href="#tabs-called" @click="changeTab" v-show="hasCalledInstances" :class="{ 'border-cyan-700 text-cyan-700 pointer-events-none': currentTab === 'tabs-called',
                   'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': currentTab !== 'tabs-called' }"
                      class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">Aufgerufene Prozesse</a>
+                  <a href="#tabs-jobs" @click="changeTab" v-show="showData.job" :class="{ 'border-cyan-700 text-cyan-700 pointer-events-none': currentTab === 'tabs-jobs',
+                  'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700': currentTab !== 'tabs-jobs' }"
+                     class="whitespace-nowrap border-b-2 py-4 px-1 text-sm font-medium">Jobs</a>
                 </nav>
               </div>
             </div>
@@ -62,8 +65,8 @@
                   </template>
                 </Suspense>
               </div>
-              <div v-show="currentTab === 'tabs-incidents'" class="tab-pane fade" id="tabs-incidents" role="tabpanel" aria-labelledby="tabs-incidents-tab"  v-if="hasIncidents">
-                <Suspense v-if="hasIncidents">
+              <div v-show="currentTab === 'tabs-incidents'" class="tab-pane fade" id="tabs-incidents" role="tabpanel" aria-labelledby="tabs-incidents-tab">
+                <Suspense v-if="showData.incident">
                   <Incidents :instance-id="instanceId"/>
                   <template #fallback>
                     <p>Loading ...</p>
@@ -71,7 +74,7 @@
                 </Suspense>
               </div>
               <div v-show="currentTab === 'tabs-tasks'" class="tab-pane fade" id="tabs-tasks" role="tabpanel" aria-labelledby="tabs-tasks-tab">
-                <Suspense v-if="hasTasks">
+                <Suspense v-if="showData.task">
                   <UserTasks :instance-id="instanceId"/>
                   <template #fallback>
                     <p>Loading ...</p>
@@ -81,6 +84,14 @@
               <div v-show="currentTab === 'tabs-called'" class="tab-pane fade" id="tabs-called" role="tabpanel" aria-labelledby="tabs-called-tab">
                 <Suspense v-if="hasCalledInstances">
                   <CalledProcessInstances :instance-id="instanceId"/>
+                  <template #fallback>
+                    <p>Loading ...</p>
+                  </template>
+                </Suspense>
+              </div>
+              <div v-show="currentTab === 'tabs-jobs'" class="tab-pane fade" id="tabs-jobs" role="tabpanel" aria-labelledby="tabs-jobs-tab">
+                <Suspense v-if="showData.job">
+                  <Jobs :instance-id="instanceId"/>
                   <template #fallback>
                     <p>Loading ...</p>
                   </template>
@@ -101,8 +112,9 @@
   import UserTasks from "../components/instance/UserTasks.vue";
   import PageTitle from "../components/shared/PageTitle.vue";
   import CalledProcessInstances from "../components/instance/CalledProcessInstances.vue";
+  import Jobs from "../components/instance/Jobs.vue";
 
-  import {onMounted, ref} from "vue";
+  import { onMounted, ref, reactive, toRaw } from "vue";
   import { useRoute } from "vue-router";
   import axios from "axios";
   import { useInstanceStore } from '@/stores/InstanceStore';
@@ -110,32 +122,26 @@
   const route = useRoute();
   const store = useInstanceStore();
   const instanceId = route.params.id;
-  const hasIncidents = ref(false);
-  const hasTasks = ref(false);
   const hasCalledInstances = ref(false);
   const currentTab = ref("tabs-diagram");
 
-  const getIncidentCount = async () => {
+  const showData = reactive({incident: false, task: false, job: false });
+  const tabs = [ 'incident', 'task', 'job' ]; // helper variable
+
+  /* generic function for calling a count endpoint */
+  const getCount = async (type) => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/incident/count?processInstanceId=${instanceId}`);
+      const result = await axios.get(`http://localhost:8080/engine-rest/${type}/count?processInstanceId=${instanceId}`);
       return result.data.count;
     } catch (err) {
       console.log(err);
     }
   }
 
-  const getUserTaskCount = async () => {
-    try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/task/count?processInstanceId=${instanceId}`);
-      return result.data.count;
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
+  /* change shown tab content */
   const changeTab = (event) => {
     if (event) {
-      var target = event.target || event.srcElement;
+      const target = event.target || event.srcElement;
 
       if (target instanceof HTMLAnchorElement) {
         console.log(target.getAttribute('href'));
@@ -147,15 +153,16 @@
   onMounted(() => {
     store.$reset();
 
-    getIncidentCount().then(count => {
-      hasIncidents.value = count > 0;
-    });
-
-    getUserTaskCount().then( count => {
-      hasTasks.value = count > 0;
+    // calling all count endpoints to decide which tabs should be shown
+    tabs.forEach(function (tab) {
+      getCount(tab).then(count => {
+        showData[tab] = count > 0;
+      });
     });
   });
 
+  // we get the called instances within ActivityInstance component,
+  // so we need to watch changes in the store to decide if we show the tab
   store.$subscribe((mutation, state) => {
     if (mutation.type === 'direct' && mutation.events.key === 'called_instances' && mutation.events.newValue.length > 0) {
       hasCalledInstances.value = true;

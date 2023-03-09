@@ -12,8 +12,7 @@
       <tr  v-for="instance in instances.values" :key="instance.id" @click="goToInstanceView(instance.id)"
            class="bg-white hover:bg-gray-100 cursor-pointer">
         <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-          <CheckCircleIcon v-show="!(instance.ended || instance.suspended)"
-                           class="w-5 h-5 text-green-700 flex-shrink-0 inline"/>
+          <ActiveIcon :active="!(instance.ended || instance.suspended)"/>
         </td>
         <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
           {{ instance.id }}
@@ -40,11 +39,11 @@
 <script setup>
   import { useFormatDate } from '@/composables/date'
   import Pagination from "../shared/Pagination.vue";
+  import ActiveIcon from "../shared/ActiveIcon.vue";
   import { ref, reactive } from "vue";
   import { useRouter } from "vue-router";
   import { useDefinitionStore } from '@/stores/DefinitionStore';
   import axios from "axios";
-  import { CheckCircleIcon } from '@heroicons/vue/24/solid'
 
   const store = useDefinitionStore();
   const router = useRouter();
