@@ -4,11 +4,13 @@
 
 <script setup>
   import { useDefinitionStore } from '@/stores/DefinitionStore';
+  import { useApplicationStore } from '@/stores/ApplicationStore';
   import { isReactive } from "vue";
   import BpmnJS from "bpmn-js";
   import axios from "axios";
 
   const store = useDefinitionStore();
+  const appStore = useApplicationStore();
 
   const props = defineProps({
     doDraw: {
@@ -27,7 +29,7 @@
 
   const getDefinitionXml = async () => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/process-definition/${store.selectedDefId}/xml`);
+      const result = await axios.get(`${appStore.domain}/process-definition/${store.selectedDefId}/xml`);
 
       return result.data.bpmn20Xml;
     } catch (err) {

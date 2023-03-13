@@ -43,9 +43,11 @@
   import { ref, reactive } from "vue";
   import { useRouter } from "vue-router";
   import { useDefinitionStore } from '@/stores/DefinitionStore';
+  import { useApplicationStore } from '@/stores/ApplicationStore';
   import axios from "axios";
 
   const store = useDefinitionStore();
+  const appStore = useApplicationStore();
   const router = useRouter();
 
   const showData = ref(false);
@@ -56,7 +58,7 @@
 
   const getInstances = async (index) => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/process-instance?processDefinitionId=${store.selectedDefId}&maxResults=${size}&firstResult=${index}`);
+      const result = await axios.get(`${appStore.domain}/process-instance?processDefinitionId=${store.selectedDefId}&maxResults=${size}&firstResult=${index}`);
       return result.data;
     } catch(err) {
       console.log(err);
@@ -65,7 +67,7 @@
 
   const getStartTimes = async (instanceIds) => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/history/process-instance?unfinished=true&processInstanceIds=${instanceIds}`);
+      const result = await axios.get(`${appStore.domain}/history/process-instance?unfinished=true&processInstanceIds=${instanceIds}`);
       return result.data;
     } catch(err) {
       console.log(err);

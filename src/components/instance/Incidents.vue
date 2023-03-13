@@ -35,7 +35,8 @@
 
 <script setup>
   import axios from "axios";
-  import { useFormatDate } from '../../composables/date.js'
+  import { useFormatDate } from '@/composables/date'
+  import { useApplicationStore } from '@/stores/ApplicationStore';
 
   const props = defineProps({
     instanceId: {
@@ -44,9 +45,11 @@
     }
   });
 
+  const appStore = useApplicationStore();
+
   const getIncidents = async () => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/incident/?processInstanceId=${props.instanceId}`);
+      const result = await axios.get(`${appStore.domain}/incident/?processInstanceId=${props.instanceId}`);
       return result.data;
     } catch (err) {
       console.log(err);

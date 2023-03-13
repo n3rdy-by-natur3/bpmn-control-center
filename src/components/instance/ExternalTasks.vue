@@ -41,7 +41,8 @@
 <script setup>
   import axios from "axios";
   import ActiveIcon from "../shared/ActiveIcon.vue";
-  import { useFormatDate } from '../../composables/date.js'
+  import { useFormatDate } from '@/composables/date'
+  import { useApplicationStore } from '@/stores/ApplicationStore';
 
   const props = defineProps({
     instanceId: {
@@ -50,9 +51,11 @@
     }
   });
 
+  const appStore = useApplicationStore();
+
   const getTasks = async () => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/external-task?processInstanceId=${props.instanceId}`);
+      const result = await axios.get(`${appStore.domain}/external-task?processInstanceId=${props.instanceId}`);
       return result.data;
     } catch (err) {
       console.log(err);

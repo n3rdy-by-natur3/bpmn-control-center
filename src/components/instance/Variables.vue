@@ -39,6 +39,7 @@
   import { formatValue } from '@/composables/process.js'
   import { ref, reactive } from "vue";
   import { useInstanceStore } from '@/stores/InstanceStore';
+  import { useApplicationStore } from '@/stores/ApplicationStore';
 
   const count = ref(0);
   const variables = reactive({ values: []});
@@ -50,6 +51,7 @@
     }
   });
   const store = useInstanceStore();
+  const appStore = useApplicationStore();
   const size = 10;
 
   const pageChanged = (id, index) => {
@@ -61,7 +63,7 @@
 
   const getVariables = async () => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/process-instance/${props.instanceId}/variables`);
+      const result = await axios.get(`${appStore.domain}/process-instance/${props.instanceId}/variables`);
       store.saveVariables(result.data);
       count.value = store.variables.length;
 

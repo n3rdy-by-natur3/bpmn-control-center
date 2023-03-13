@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from "axios";
+import { useApplicationStore } from './ApplicationStore';
 
 export const useDefinitionStore = defineStore('DefinitionStore', {
     state: () => ({
@@ -10,8 +11,10 @@ export const useDefinitionStore = defineStore('DefinitionStore', {
     }),
     actions: {
         async getInstanceCount() {
+            const appStore = useApplicationStore();
+
             try {
-                const result = await axios.get(`http://localhost:8080/engine-rest/process-instance/count?processDefinitionId=` + this.selectedDefId);
+                const result = await axios.get(`${appStore.domain}/process-instance/count?processDefinitionId=` + this.selectedDefId);
                 this.instanceCount = result.data.count;
             } catch(err) {
                 console.log(err);

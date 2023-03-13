@@ -1,11 +1,9 @@
 <template>
-  <div class="min-h-full">
-    <div class="flex flex-1 flex-col lg:pl-64">
-      <main class="flex-1 pb-8">
-        <RouterView />
-      </main>
+  <main class="grid min-h-full place-items-center bg-white py-24 px-6 sm:py-32 lg:px-8">
+    <div class="text-center">
+      <RouterView />
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup>

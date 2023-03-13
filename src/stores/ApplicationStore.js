@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 export const useApplicationStore = defineStore('ApplicationStore', {
     state: () => ({
         domain: '',
-        redirected: false,
+        redirected: false, // TODO needed?
         error: '', // flash message
         warn: '' // flash message
     }),

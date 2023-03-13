@@ -29,9 +29,11 @@
   import { ref } from "vue";
   import axios from "axios";
   import { useDefinitionStore } from '@/stores/DefinitionStore';
+  import { useApplicationStore } from '@/stores/ApplicationStore';
   import { ChevronDownIcon } from '@heroicons/vue/24/solid';
 
   const store = useDefinitionStore();
+  const appStore = useApplicationStore();
   const defaultDefText = 'Auswahl Definition';
   const defText = ref(defaultDefText);
 
@@ -43,7 +45,7 @@
 
   const getProcessDefinitions = async () => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/process-definition?latestVersion=true`);
+      const result = await axios.get(`${appStore.domain}/process-definition?latestVersion=true`);
 
       return result.data;
     } catch (err) {

@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-  import EngineDropdown from "./EngineDropdown.vue";
+  import EngineDropdown from "../EngineDropdown.vue";
 
   const props = defineProps({
     title: {

@@ -19,15 +19,17 @@
   import { reactive, ref } from "vue";
   import { mapInstances } from "@/composables/process";
   import { useDefinitionStore } from '@/stores/DefinitionStore';
+  import { useApplicationStore } from '@/stores/ApplicationStore';
 
   const store = useDefinitionStore();
+  const appStore = useApplicationStore();
   const activities = reactive({ values: {}});
 
   const showDiagram = ref(false);
 
   const getActivityInstance = async () => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/history/activity-instance?processDefinitionId=${store.selectedDefId}&unfinished=true`);
+      const result = await axios.get(`${appStore.domain}/history/activity-instance?processDefinitionId=${store.selectedDefId}&unfinished=true`);
       return mapInstances(result.data);
     } catch (err) {
       console.log(err);

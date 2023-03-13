@@ -130,9 +130,11 @@
   import { useRoute } from "vue-router";
   import axios from "axios";
   import { useInstanceStore } from '@/stores/InstanceStore';
+  import { useApplicationStore } from '@/stores/ApplicationStore';
 
   const route = useRoute();
   const store = useInstanceStore();
+  const appStore = useApplicationStore();
   const instanceId = route.params.id;
   const hasCalledInstances = ref(false);
   const currentTab = ref("tabs-diagram");
@@ -143,7 +145,7 @@
   /* generic function for calling a count endpoint */
   const getCount = async (type) => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/${type}/count?processInstanceId=${instanceId}`);
+      const result = await axios.get(`${appStore.domain}/${type}/count?processInstanceId=${instanceId}`);
       return result.data.count;
     } catch (err) {
       console.log(err);

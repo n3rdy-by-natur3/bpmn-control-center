@@ -40,8 +40,9 @@
 <script setup>
   import axios from "axios";
   import { reactive } from "vue";
-  import { useFormatDate } from '../../composables/date.js'
+  import { useFormatDate } from '@/composables/date'
   import ActiveIcon from "../shared/ActiveIcon.vue";
+  import { useApplicationStore } from '@/stores/ApplicationStore';
 
   const props = defineProps({
     instanceId: {
@@ -50,11 +51,12 @@
     }
   });
 
+  const appStore = useApplicationStore();
   const jobs = reactive({ values: []});
 
   const getJobs = async () => {
     try {
-      const result = await axios.get(`http://localhost:8080/engine-rest/job?processInstanceId=${props.instanceId}`);
+      const result = await axios.get(`${appStore.domain}/job?processInstanceId=${props.instanceId}`);
 
       return result.data;
     } catch (err) {

@@ -1,8 +1,8 @@
 <template>
-  <div class="flex flex-1" v-if="showDropdown">
-    <div class="py-4 relative inline-block text-left">
+  <div class="block w-full" v-if="showDropdown">
+    <div class="py-4 relative block text-left">
       <div>
-        <button @click="toggle" type="button" class="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white
+        <button @click="toggle" type="button" class="w-full inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white
                 px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                 id="menu-button" aria-expanded="true" aria-haspopup="true">
           Camunda engines
@@ -38,12 +38,16 @@
   import {ref} from "vue";
   import { useApplicationStore } from '@/stores/ApplicationStore';
   import { ChevronDownIcon } from '@heroicons/vue/24/solid';
-  import appConfig from "../../../app.config.json";
+  import appConfig from "../../app.config.json";
 
   const store = useApplicationStore();
   const hosts = appConfig.hosts;
   const isOpen = ref(false);
   const showDropdown = hosts && hosts.length > 1;
+
+  if (hosts.length === 1) {
+    store.domain = hosts[0];
+  }
 
   const toggle = () => {
     isOpen.value = !isOpen.value;
