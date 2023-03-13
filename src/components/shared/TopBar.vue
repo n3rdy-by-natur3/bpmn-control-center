@@ -42,5 +42,5 @@
 </template>
 
 <script setup>
-  import { RectangleStackIcon, ArrowRightOnRectangleIcon } from '@heroicons/vue/24/solid'
+  import { ArrowRightOnRectangleIcon } from '@heroicons/vue/24/solid';
 </script>
