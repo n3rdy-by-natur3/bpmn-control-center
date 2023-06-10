@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-full">
-    <div class="flex flex-1 flex-col lg:pl-64">
+    <div class="flex flex-1 flex-col">
       <main class="flex-1 pb-8">
         <RouterView />
       </main>

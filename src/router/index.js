@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import ProcessInstanceView from '../views/ProcessInstanceView.vue'
 import ProcessInstanceSelectView from '../views/ProcessInstanceSelectView.vue'
 import ProcessDefinitionView from '../views/ProcessDefinitionView.vue'
+import SettingsView from '../views/SettingsView.vue'
 import NotFound from '../views/NotFoundView.vue';
 import InternalServerError from '../views/InternalServerError.vue';
 import { useApplicationStore } from '@/stores/ApplicationStore';
@@ -20,6 +21,11 @@ const router = createRouter({
       path: '/definition',
       name: 'definition',
       component: ProcessDefinitionView
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: SettingsView
     },
     {
       path: '/processes',
