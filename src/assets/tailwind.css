@@ -24,3 +24,13 @@
 #nav-left nav a:not(.router-link-active) {
     @apply text-cyan-100 hover:text-white hover:bg-cyan-600;
 }
+
+.formkit-actions .formkit-input {
+    @apply flex w-full justify-center rounded-md bg-cyan-700 py-2 px-3 text-sm font-semibold
+    text-white shadow-sm hover:bg-cyan-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+    focus-visible:outline-cyan-600
+}
+
+.formkit-form .formkit-messages {
+    @apply text-left text-sm w-60 text-red-600;
+}

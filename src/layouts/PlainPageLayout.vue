@@ -1,5 +1,5 @@
 <template>
-  <main class="grid min-h-full place-items-center bg-white py-24 px-6 sm:py-32 lg:px-8">
+  <main class="grid min-h-full place-items-center py-24 px-6 sm:py-32 lg:px-8">
     <div class="text-center">
       <RouterView />
     </div>

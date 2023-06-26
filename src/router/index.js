@@ -5,8 +5,8 @@ import ProcessInstanceSelectView from '../views/ProcessInstanceSelectView.vue'
 import ProcessDefinitionView from '../views/ProcessDefinitionView.vue'
 import NotFound from '../views/NotFoundView.vue';
 import InternalServerError from '../views/InternalServerError.vue';
+import Login from '../views/Login.vue';
 import { useApplicationStore } from '@/stores/ApplicationStore';
-import appConfig from '../../app.config.json';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,6 +30,14 @@ const router = createRouter({
       path: '/processes/:id',
       name: 'instance',
       component: ProcessInstanceView
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login,
+      meta: {
+        layout: 'PlainPageLayout'
+      }
     },
     {
       path: '/404',
@@ -60,22 +68,9 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   const store = useApplicationStore();
 
-  if (!store.domain && !store.isRedirected()) {
-    const hosts = appConfig.hosts;
-    console.log("hosts from config file: " + hosts);
-
-    if (!hosts || hosts.length === 0) {
-      store.error ='Property hosts is missing in app.config.json. Please provide at least one host, where a Camunda engine is running.';
-      store.redirected = true;
-      return '/500';
-    } else if (hosts.length === 1) {
-      store.domain = hosts[0];
-    } else {
-      // TODO change to show the login page
-      //store.warn = 'Bitte wählen sie eine Camunda Engine aus.';
-      store.redirected = true;
-      return { name: 'home' };
-    }
+  if (!store.domain && to.name !== 'login') {
+    // TODO logout
+    return '/login';
   }
 });
 
