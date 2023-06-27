@@ -2,13 +2,14 @@ import { defineStore } from 'pinia';
 import axios from "axios";
 import CryptoJS from 'crypto-js';
 import VueCookies from 'vue-cookies';
+import { useApplicationStore } from './ApplicationStore';
 
 /*
     authorization is handled with this store (and not with ApplicationStore), because it's only a session store
  */
 export const useAuthStore = defineStore('AuthStore', {
     state: () => ({
-        axios: {},
+        axios: undefined,
         type: '', // username
         part: '', // encrypted password
     }),
@@ -46,25 +47,34 @@ export const useAuthStore = defineStore('AuthStore', {
 
             return '';
         },
+        logout() {
+            this.type = '';
+            this.part = '';
+            VueCookies.remove('word');
+        },
+        /* helper for getting the HTTP connection object config with Basic Auth credentials and the base URL */
         getAxios() {
-            if (this.axios.keys.length > 0) {
+            if (this.axios) {
                 return this.axios;
             }
 
             const appStore = useApplicationStore();
-            const name = this.cred1;
-            const password = this.cred2;
+            const name = this.type;
+            const password = this.decryptedPassword();
 
             this.axios = axios.create({
-                baseURL: appStore.domain,
                 auth:{
-                    username: name.value,
-                    password: password.value
-                }
+                    username: name,
+                    password: password
+                },
+                baseURL: appStore.domain
             });
+
+            return this.axios;
         }
     },
     persist: {
         storage: sessionStorage, // data in sessionStorage is cleared when the page session ends.
+        paths: [ 'type', 'part' ] // don't store axios because of credentials
     }
 });

@@ -1,27 +1,5 @@
 <template>
-  <!--
-  This example requires some changes to your config:
-
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
--->
-  <!--
-    This example requires updating your template:
-
-    ```
-    <html class="h-full bg-gray-50">
-    <body class="h-full">
-    ```
-  -->
-  <div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
       <!-- <img class="mx-auto h-12 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" alt="Your Company"> -->
       <h1 class="mx-auto w-auto text-cyan-700 text-xl">BPMN Control Center</h1>
@@ -75,13 +53,15 @@
 </style>
 
 <script setup>
-  import { ref, watch, getCurrentInstance } from 'vue'
+  import { ref } from 'vue'
   import EngineDropdown from "../components/EngineDropdown.vue";
   import { useApplicationStore } from '@/stores/ApplicationStore';
   import { useAuthStore } from '@/stores/AuthStore';
+  import { useRouter } from "vue-router";
   import axios from "axios";
 
   const domainMissing = ref(false);
+  const router = useRouter();
   const store = useApplicationStore();
   const authStore = useAuthStore();
 
@@ -90,6 +70,8 @@
   }
 
   const send = async (credentials, node) => {
+    // we need a domain for login, it should be configured in app.config.json,
+    // if there is more than one, it has to be chosen by the user
     if (store.domain === '') {
       domainMissing.value = true;
     }
@@ -101,21 +83,30 @@
         auth:{
           username: credentials.name,
           password: credentials.password
-        }
+        },
+        baseURL: store.domain,
       };
 
-      // there is no login endpoint, so we misuse the version endpoint
-      const version = await axios
-          .get(`${store.domain}/version`, config)
-          .then(function (response) {
-            // to do forward, store credentials
-            console.log("response: " + response.data.version + " status: " + response.status);
-            console.log("cred: " + credentials.name + "-> " + credentials.password);
-            var test = authStore.generateSecret();
-            console.log("test: " + test);
+      // there is no explicit login endpoint, so we use /identity/verify where we have to provide the credentials twice :D
+      await axios
+          .post(`/identity/verify`, { username: credentials.name, password: credentials.password }, config)
+          .then(async function (response) {
             authStore.setCredentials(credentials.name, credentials.password);
 
-            console.log("decrypted: " + authStore.decryptedPassword());
+            if (!response.data.authenticated) {
+              // there should be a 401 when the user can't be authenticated
+              console.log('missing user ID in /identity/verify');
+              node.setErrors(['Server Fehler. Bitte versuchen Sie es später nochmal.']);
+            } else {
+              // get the users name for showing in dashboard
+              await axios
+                  .get(`/user/${credentials.name}/profile`, config)
+                  .then(function(result) {
+                    store.user_name = result.data.firstName + ' ' + result.data.lastName;
+                  });
+
+              router.push({ name: 'home'});
+            }
           })
           .catch(function (error) {
             // 401 means login failed, all other status are handled as server error

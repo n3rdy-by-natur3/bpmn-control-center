@@ -5,7 +5,8 @@ export const useApplicationStore = defineStore('ApplicationStore', {
         domain: '',
         redirected: false, // TODO needed?
         error: '', // flash message
-        warn: '' // flash message
+        warn: '', // flash message
+        user_name: ''
     }),
     actions: {
         getError() {

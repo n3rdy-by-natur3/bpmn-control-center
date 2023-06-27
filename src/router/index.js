@@ -3,9 +3,10 @@ import HomeView from '../views/HomeView.vue'
 import ProcessInstanceView from '../views/ProcessInstanceView.vue'
 import ProcessInstanceSelectView from '../views/ProcessInstanceSelectView.vue'
 import ProcessDefinitionView from '../views/ProcessDefinitionView.vue'
+import Unauthorized from '../views/UnauthorizedView.vue';
 import NotFound from '../views/NotFoundView.vue';
 import InternalServerError from '../views/InternalServerError.vue';
-import Login from '../views/Login.vue';
+import Login from '../views/LoginView.vue';
 import { useApplicationStore } from '@/stores/ApplicationStore';
 
 const router = createRouter({
@@ -38,6 +39,11 @@ const router = createRouter({
       meta: {
         layout: 'PlainPageLayout'
       }
+    },
+    {
+      path: '/401',
+      name: 'unauthorized',
+      component: Unauthorized
     },
     {
       path: '/404',

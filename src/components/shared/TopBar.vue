@@ -13,11 +13,11 @@
       <div class="ml-4 flex items-center md:ml-6">
         <div class="relative mr-3">
           <div>
-            <span class="ml-3 hidden text-sm font-medium text-gray-500 lg:block">Toni Tester</span>
+            <span class="ml-3 hidden text-sm font-medium text-gray-500 lg:block">{{ store.user_name }}</span>
           </div>
         </div>
 
-        <button type="button" class="rounded-full bg-white p-1 text-gray-400 hover:text-gray-500">
+        <button type="button" class="rounded-full bg-white p-1 text-gray-400 hover:text-gray-500" @click="logout()">
           <span class="sr-only">Logout</span>
           <ArrowRightOnRectangleIcon class="h-6 w-6"/>
         </button>
@@ -43,4 +43,16 @@
 
 <script setup>
   import { ArrowRightOnRectangleIcon } from '@heroicons/vue/24/solid';
+  import { useApplicationStore } from '@/stores/ApplicationStore';
+  import { useAuthStore } from '@/stores/AuthStore';
+  import { useRouter } from "vue-router";
+
+  const store = useApplicationStore();
+  const authStore = useAuthStore();
+  const router = useRouter();
+
+  const logout = () => {
+    authStore.logout();
+    router.push({ name: 'login'});
+  };
 </script>

@@ -27,15 +27,18 @@
 
 <script setup>
   import { ref } from "vue";
-  import axios from "axios";
+  import { useRouter } from "vue-router";
   import { useDefinitionStore } from '@/stores/DefinitionStore';
   import { useApplicationStore } from '@/stores/ApplicationStore';
+  import { useAuthStore } from '@/stores/AuthStore';
   import { ChevronDownIcon } from '@heroicons/vue/24/solid';
 
   const store = useDefinitionStore();
   const appStore = useApplicationStore();
+  const authStore = useAuthStore();
   const defaultDefText = 'Auswahl Definition';
   const defText = ref(defaultDefText);
+  const router = useRouter();
 
   const isOpen = ref(false);
 
@@ -45,7 +48,16 @@
 
   const getProcessDefinitions = async () => {
     try {
-      const result = await axios.get(`${appStore.domain}/process-definition?latestVersion=true`);
+      const result = await authStore.getAxios()
+          .get(`/process-definition?latestVersion=true`)
+          .catch(function (error) {
+              // 401 means login failed, all other status are handled as server error
+              if (error.response && error.response.status === 401) {
+                router.push({ name: 'unauthorized' });
+              } else {
+                router.push({ name: 'internal-server-error' });
+              }
+          });
 
       return result.data;
     } catch (err) {
