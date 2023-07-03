@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
-import axios from "axios";
-import { useApplicationStore } from './ApplicationStore';
+import { useAuthStore } from './AuthStore';
 
 export const useDefinitionStore = defineStore('DefinitionStore', {
     state: () => ({
@@ -10,12 +9,29 @@ export const useDefinitionStore = defineStore('DefinitionStore', {
         instanceCount: 0 // number of instances for the selected process
     }),
     actions: {
+        /**
+         * Getting instance count from the REST API and storing it in instanceCount.
+         * In case of 401 a -1 is stored and in case of any other error, a -2 is stored.
+         * @returns {Promise<void>}
+         */
         async getInstanceCount() {
-            const appStore = useApplicationStore();
+            const authStore = useAuthStore();
 
             try {
-                const result = await axios.get(`${appStore.domain}/process-instance/count?processDefinitionId=` + this.selectedDefId);
-                this.instanceCount = result.data.count;
+                const result = await authStore.getAxios()
+                    .get(`/process-instance/count?processDefinitionId=` + this.selectedDefId)
+                    .catch(function (error) {
+                        // we don't handle here the error directly
+                        if (error.response && error.response.status === 401) {
+                            this.instanceCount = -1;
+                        } else {
+                            this.instanceCount = -2;
+                        }
+                    });
+
+                if (result && result.data) {
+                    this.instanceCount = result.data.count;
+                }
             } catch(err) {
                 console.log(err);
             }

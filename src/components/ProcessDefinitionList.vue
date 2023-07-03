@@ -47,22 +47,17 @@
   }
 
   const getProcessDefinitions = async () => {
-    try {
-      const result = await authStore.getAxios()
-          .get(`/process-definition?latestVersion=true`)
-          .catch(function (error) {
-              // 401 means login failed, all other status are handled as server error
-              if (error.response && error.response.status === 401) {
-                router.push({ name: 'unauthorized' });
-              } else {
-                router.push({ name: 'internal-server-error' });
-              }
-          });
+    const result = await authStore.getAxios()
+        .get(`/process-definition?latestVersion=true`)
+        .catch(function (error) {
+            if (error.response && error.response.status === 401) {
+              router.push({ name: 'unauthorized' });
+            } else {
+              router.push({ name: 'internal-server-error' });
+            }
+        });
 
-      return result.data;
-    } catch (err) {
-      console.log(err);
-    }
+    return result.data;
   };
 
   const showData = (definition) => {
