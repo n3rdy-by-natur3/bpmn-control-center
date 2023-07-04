@@ -8,14 +8,11 @@
 <script setup>
   import Hint from "../shared/Hint.vue";
   import { useDefinitionStore } from '@/stores/DefinitionStore';
-  import { useApplicationStore } from '@/stores/ApplicationStore';
   import { useAuthStore } from '@/stores/AuthStore';
   import { isReactive, ref } from "vue";
   import BpmnJS from "bpmn-js";
-  import axios from "axios";
 
   const store = useDefinitionStore();
-  const appStore = useApplicationStore();
   const authStore = useAuthStore();
   const err_text = ref('');
   const err_type = ref('warn');

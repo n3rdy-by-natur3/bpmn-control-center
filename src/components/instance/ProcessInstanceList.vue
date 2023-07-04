@@ -1,4 +1,6 @@
 <template>
+  <Hint v-if="!available" :text="err_text" :text-type="err_type"/>
+
   <table class="min-w-full divide-y divide-gray-200" v-show="showData">
     <thead>
       <tr>
@@ -37,17 +39,17 @@
 </template>
 
 <script setup>
-  import { useFormatDate } from '@/composables/date'
   import Pagination from "../shared/Pagination.vue";
   import ActiveIcon from "../shared/ActiveIcon.vue";
+  import Hint from "../shared/Hint.vue";
+  import { useFormatDate } from '@/composables/date'
   import { ref, reactive } from "vue";
   import { useRouter } from "vue-router";
   import { useDefinitionStore } from '@/stores/DefinitionStore';
-  import { useApplicationStore } from '@/stores/ApplicationStore';
-  import axios from "axios";
+  import { useAuthStore } from '@/stores/AuthStore';
 
   const store = useDefinitionStore();
-  const appStore = useApplicationStore();
+  const authStore = useAuthStore();
   const router = useRouter();
 
   const showData = ref(false);
@@ -56,19 +58,44 @@
   const size = 10;
   const count = ref(0);
 
+  const err_text = ref('');
+  const err_type = ref('warn');
+  const available = ref(true);
+
   const getInstances = async (index) => {
-    try {
-      const result = await axios.get(`${appStore.domain}/process-instance?processDefinitionId=${store.selectedDefId}&maxResults=${size}&firstResult=${index}`);
-      return result.data;
-    } catch(err) {
-      console.log(err);
-    }
+    const result = await authStore.getAxios()
+        .get(`/process-instance?processDefinitionId=${store.selectedDefId}&maxResults=${size}&firstResult=${index}`)
+        .catch(function (error) {
+          showData.value = false;
+          if (error.response && error.response.status === 401) {
+            available.value = false;
+            err_text.value = 'Es besteht keine Berechtigung, die Liste der Instanzen zu sehen.';
+            err_type.value='warn';
+          } else {
+            available.value = false;
+            err_text.value = 'Die Liste der Instanzen kann nicht geladen werden.';
+            err_type.value='error';
+          }
+        });
+    return result? result.data : undefined;
   }
 
   const getStartTimes = async (instanceIds) => {
     try {
-      const result = await axios.get(`${appStore.domain}/history/process-instance?unfinished=true&processInstanceIds=${instanceIds}`);
-      return result.data;
+      const result = await authStore.getAxios()
+          .get(`/history/process-instance?unfinished=true&processInstanceIds=${instanceIds}`)
+          .catch(function (error) {
+            if (error.response && error.response.status === 401) {
+              available.value = false;
+              err_text.value = 'Es besteht keine Berechtigung, die Startzeiten anzuzeigen.';
+              err_type.value='warn';
+            } else {
+              available.value = false;
+              err_text.value = 'Die Startzeiten konnten nicht geladen werden.';
+              err_type.value='warn';
+            }
+          });
+      return result? result.data : undefined;
     } catch(err) {
       console.log(err);
     }
@@ -88,10 +115,12 @@
 
     // with instance IDs get history data
     getStartTimes(ids).then(list => {
-      // get all start times from list and map it to the instance ID
-      instanceTimes.values = new Map(list.map(instance => [instance.id, instance.startTime]));
+      if (list) {
+        // get all start times from list and map it to the instance ID
+        instanceTimes.values = new Map(list.map(instance => [instance.id, instance.startTime]));
 
-      enhanceInstances(instances.values, instanceTimes.values);
+        enhanceInstances(instances.values, instanceTimes.values);
+      }
     });
   }
 
@@ -115,8 +144,10 @@
 
       // at first get all process instances
       getInstances(0).then(result => {
-        instances.values = result;
-        computeStartTimes();
+        if (result) {
+          instances.values = result;
+          computeStartTimes();
+        }
       });
     }
 

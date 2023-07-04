@@ -15,21 +15,29 @@
 
 <script setup>
   import BpmnViewer from "../shared/BpmnViewer.vue";
-  import axios from "axios";
   import { reactive, ref } from "vue";
   import { mapInstances } from "@/composables/process";
   import { useDefinitionStore } from '@/stores/DefinitionStore';
-  import { useApplicationStore } from '@/stores/ApplicationStore';
+  import { useAuthStore } from '@/stores/AuthStore';
 
   const store = useDefinitionStore();
-  const appStore = useApplicationStore();
+  const authStore = useAuthStore();
   const activities = reactive({ values: {}});
 
   const showDiagram = ref(false);
 
   const getActivityInstance = async () => {
     try {
-      const result = await axios.get(`${appStore.domain}/history/activity-instance?processDefinitionId=${store.selectedDefId}&unfinished=true`);
+      const result = await authStore.getAxios()
+          .get(`/history/activity-instance?processDefinitionId=${store.selectedDefId}&unfinished=true`)
+          .catch(function (error) {
+            // TODO needs the user to know this problem?
+            if (error.response && error.response.status === 401) {
+              console.log('Missing authorization for activity instances from history'); // TODO
+            } else {
+              console.log('error for activity instances from history'); // TODO
+            }
+          });
       return mapInstances(result.data);
     } catch (err) {
       console.log(err);
