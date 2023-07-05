@@ -1,4 +1,8 @@
 <template>
+  <div class="my-4">
+    <Hint v-if="!available" :text="err_text" :text-type="err_type"/>
+  </div>
+
   <Suspense>
     <BpmnViewer :do-draw="true" :overlays="activities"/>
     <template #fallback>
@@ -9,10 +13,11 @@
 
 <script setup>
   import BpmnViewer from "../shared/BpmnViewer.vue";
-  import axios from "axios";
+  import Hint from "../shared/Hint.vue";
   import { mapInstances, filterCalledInstances } from '@/composables/process.js'
   import { useInstanceStore } from '@/stores/InstanceStore';
-  import { useApplicationStore } from '@/stores/ApplicationStore';
+  import { useAuthStore } from '@/stores/AuthStore';
+  import {ref} from "vue";
 
   const props = defineProps({
     instanceId: {
@@ -22,13 +27,28 @@
   });
 
   const store = useInstanceStore();
-  const appStore = useApplicationStore();
+  const authStore = useAuthStore();
+
+  const err_text = ref('');
+  const err_type = ref('warn');
+  const available = ref(true);
 
   const getActivityInstance = async () => {
     try {
-      const result = await axios.get(`${appStore.domain}/process-instance/${props.instanceId}/activity-instances`);
-      store.called_instances = filterCalledInstances(result.data.childActivityInstances); // stores called instances
-      return mapInstances(result.data.childActivityInstances);
+      const result = await authStore.getAxios()
+          .get(`/process-instance/${props.instanceId}/activity-instances`)
+          .catch(function (error) {
+            if (error.response && error.response.status === 401) {
+              available.value = false;
+              err_text.value = "Es besteht keine Berechtigung, die aktiven Instanzen im Diagramm zu sehen.";
+            } else {
+              console.log('error: ' + error);
+            }
+          });
+      if (result) {
+        store.called_instances = filterCalledInstances(result.data.childActivityInstances); // stores called instances
+      }
+      return result? mapInstances(result.data.childActivityInstances) : undefined;
     } catch (err) {
       console.log(err);
     }

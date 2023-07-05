@@ -15,13 +15,13 @@
             </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
-            <tr v-for="instance in instances.values" :key="instance.id" @click="goToInstanceView(instance.id)">
-              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500 sm:pl-0">{{ instance.id }}</td>
-              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ instance.activityId }}</td>
-              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ instance.incidentType }}</td>
-              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ instance.incidentMessage }}</td>
-              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ instance.configuration }}</td>
-              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ useFormatDate(instance.incidentTimestamp) }}</td>
+            <tr v-for="incident in incidents.values" :key="incident.id" @click="goToInstanceView(incident.id)">
+              <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-500 sm:pl-0">{{ incident.id }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ incident.activityId }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ incident.incidentType }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ incident.incidentMessage }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ incident.configuration }}</td>
+              <td class="whitespace-nowrap py-4 px-3 text-sm text-gray-500">{{ useFormatDate(incident.incidentTimestamp) }}</td>
             </tr>
 
             <!-- More people... -->
@@ -34,9 +34,8 @@
 </template>
 
 <script setup>
-  import axios from "axios";
   import { useFormatDate } from '@/composables/date'
-  import { useApplicationStore } from '@/stores/ApplicationStore';
+  import { useAuthStore } from '@/stores/AuthStore';
 
   const props = defineProps({
     instanceId: {
@@ -45,12 +44,17 @@
     }
   });
 
-  const appStore = useApplicationStore();
+  const authStore = useAuthStore();
 
   const getIncidents = async () => {
     try {
-      const result = await axios.get(`${appStore.domain}/incident/?processInstanceId=${props.instanceId}`);
-      return result.data;
+      const result = await authStore.getAxios()
+          .get(`/incident/?processInstanceId=${props.instanceId}`)
+          .catch(function (error) {
+            // we don't care for 401 here because it's already checked by the count call at ProcessInstanceView
+            console.log("error: " + error);
+          });
+      return result? result.data : [];
     } catch (err) {
       console.log(err);
     }

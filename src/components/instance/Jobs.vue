@@ -38,11 +38,10 @@
 </template>
 
 <script setup>
-  import axios from "axios";
   import { reactive } from "vue";
   import { useFormatDate } from '@/composables/date'
   import ActiveIcon from "../shared/ActiveIcon.vue";
-  import { useApplicationStore } from '@/stores/ApplicationStore';
+  import { useAuthStore } from '@/stores/AuthStore';
 
   const props = defineProps({
     instanceId: {
@@ -51,14 +50,20 @@
     }
   });
 
-  const appStore = useApplicationStore();
+  const authStore = useAuthStore();
   const jobs = reactive({ values: []});
 
   const getJobs = async () => {
     try {
-      const result = await axios.get(`${appStore.domain}/job?processInstanceId=${props.instanceId}`);
+      const result = await authStore.getAxios()
+          .get(`/job?processInstanceId=${props.instanceId}`)
+          .catch(function (error) {
+            // we don't care for 401 here because it's already checked by the count call at ProcessInstanceView
+            console.log("error: " + error);
+          }
+      );
 
-      return result.data;
+      return result? result.data : [];
     } catch (err) {
       console.log(err);
     }

@@ -39,10 +39,9 @@
 </template>
 
 <script setup>
-  import axios from "axios";
   import ActiveIcon from "../shared/ActiveIcon.vue";
   import { useFormatDate } from '@/composables/date'
-  import { useApplicationStore } from '@/stores/ApplicationStore';
+  import { useAuthStore } from '@/stores/AuthStore';
 
   const props = defineProps({
     instanceId: {
@@ -51,12 +50,17 @@
     }
   });
 
-  const appStore = useApplicationStore();
+  const authStore = useAuthStore();
 
   const getTasks = async () => {
     try {
-      const result = await axios.get(`${appStore.domain}/external-task?processInstanceId=${props.instanceId}`);
-      return result.data;
+      const result = await authStore.getAxios()
+          .get(`/external-task?processInstanceId=${props.instanceId}`)
+          .catch(function (error) {
+            // we don't care for 401 here because it's already checked by the count call at ProcessInstanceView
+            console.log("error: " + error);
+          });
+      return result? result.data : [];
     } catch (err) {
       console.log(err);
     }

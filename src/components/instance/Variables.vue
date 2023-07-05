@@ -1,4 +1,8 @@
 <template>
+  <div class="mt-4">
+    <Hint v-if="!available" :text="err_text" :text-type="err_type"/>
+  </div>
+
   <div class="px-4 sm:px-6 lg:px-8">
     <div class="mt-8 flow-root">
       <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -35,11 +39,11 @@
 
 <script setup>
   import Pagination from "../shared/Pagination.vue";
-  import axios from "axios";
+  import Hint from "../shared/Hint.vue";
   import { formatValue } from '@/composables/process.js'
   import { ref, reactive } from "vue";
   import { useInstanceStore } from '@/stores/InstanceStore';
-  import { useApplicationStore } from '@/stores/ApplicationStore';
+  import {useAuthStore} from "@/stores/AuthStore";
 
   const count = ref(0);
   const variables = reactive({ values: []});
@@ -51,8 +55,12 @@
     }
   });
   const store = useInstanceStore();
-  const appStore = useApplicationStore();
+  const authStore = useAuthStore();
   const size = 10;
+
+  const err_text = ref('');
+  const err_type = ref('warn');
+  const available = ref(true);
 
   const pageChanged = (id, index) => {
     console.log('VARIABLES event ID: ' + id);
@@ -63,8 +71,21 @@
 
   const getVariables = async () => {
     try {
-      const result = await axios.get(`${appStore.domain}/process-instance/${props.instanceId}/variables`);
-      store.saveVariables(result.data);
+      const result = await authStore.getAxios()
+          .get(`/process-instance/${props.instanceId}/variables`)
+          .catch(function (error) {
+            if (error.response && error.response.status === 401) {
+              available.value = false;
+              err_text.value = "Es besteht keine Berechtigung, die Variablen zu sehen.";
+            } else {
+              console.log('error: ' + error);
+            }
+          }
+      );
+
+      if (result) {
+        store.saveVariables(result.data);
+      }
       count.value = store.variables.length;
 
       return count.value > size ? store.getVariableSublist(0, size) : store.variables;

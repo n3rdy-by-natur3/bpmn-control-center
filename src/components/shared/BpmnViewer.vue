@@ -6,7 +6,7 @@
 </template>
 
 <script setup>
-  import Hint from "../shared/Hint.vue";
+  import Hint from "./Hint.vue";
   import { useDefinitionStore } from '@/stores/DefinitionStore';
   import { useAuthStore } from '@/stores/AuthStore';
   import { isReactive, ref } from "vue";

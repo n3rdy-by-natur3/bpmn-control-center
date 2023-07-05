@@ -5,6 +5,8 @@
     <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col">
         <div class="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg bg-white p-5">
+          <Hint v-if="!available" :text="err_text" :text-type="err_type"/>
+
           <div>
             <div class="sm:hidden">
               <label for="tabs" class="sr-only">Select a tab</label>
@@ -117,6 +119,7 @@
 </template>
 
 <script setup>
+  import Hint from "../components/shared/Hint.vue";
   import ActivityInstance from "../components/instance/ActivityInstance.vue";
   import Variables from "../components/instance/Variables.vue";
   import Incidents from "../components/instance/Incidents.vue";
@@ -128,25 +131,37 @@
 
   import { onMounted, ref, reactive, toRaw } from "vue";
   import { useRoute } from "vue-router";
-  import axios from "axios";
   import { useInstanceStore } from '@/stores/InstanceStore';
-  import { useApplicationStore } from '@/stores/ApplicationStore';
+  import { useAuthStore } from '@/stores/AuthStore';
 
   const route = useRoute();
   const store = useInstanceStore();
-  const appStore = useApplicationStore();
+  const authStore = useAuthStore();
   const instanceId = route.params.id;
   const hasCalledInstances = ref(false);
   const currentTab = ref("tabs-diagram");
 
   const showData = reactive({incident: false, task: false, job: false, 'external-task': false });
   const tabs = [ 'incident', 'task', 'job', 'external-task' ]; // helper variable
+  const missing = []; // storing tabs with missing authorization
+
+  const err_text = ref('');
+  const err_type = ref('warn');
+  const available = ref(true);
 
   /* generic function for calling a count endpoint */
   const getCount = async (type) => {
     try {
-      const result = await axios.get(`${appStore.domain}/${type}/count?processInstanceId=${instanceId}`);
-      return result.data.count;
+      const result = await authStore.getAxios()
+          .get(`/${type}/count?processInstanceId=${instanceId}`)
+          .catch(function (error) {
+            if (error.response && error.response.status === 401) {
+              missing.push(type);
+            } else {
+              console.log("Can't get data for type: " + type);
+            }
+          });
+      return result? result.data.count : undefined;
     } catch (err) {
       console.log(err);
     }
@@ -168,9 +183,15 @@
     store.$reset();
 
     // calling all count endpoints to decide which tabs should be shown
-    tabs.forEach(function (tab) {
+    tabs.forEach(function (tab, index) {
       getCount(tab).then(count => {
-        showData[tab] = count > 0;
+        showData[tab] = count && count > 0;
+
+        // show where authorizations are missing
+        if ( index === tabs.length - 1 && missing.length > 0 ) {
+          available.value = false;
+          err_text.value = "Die Berechtigungen für folgende Tabs fehlen: " + missing.join(", ");
+        }
       });
     });
   });
