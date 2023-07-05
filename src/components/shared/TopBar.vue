@@ -1,6 +1,6 @@
 <template>
   <!-- Name des eingeloggten Benutzers, Logout Button -->
-  <div class="flex h-16 flex-shrink-0 border-b border-gray-200 bg-white lg:border-none">
+  <div class="flex h-12 flex-shrink-0 border-b border-gray-200 bg-white lg:border-none">
     <!-- open sidebar -->
     <button type="button" class="border-r border-gray-200 px-4 text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-cyan-500 lg:hidden">
       <span class="sr-only">Open sidebar</span>
@@ -9,7 +9,7 @@
       </svg>
     </button>
 
-    <div class="flex flex-1 justify-end px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
+    <div class="flex flex-1 justify-end px-4 lg:mx-auto">
       <div class="ml-4 flex items-center md:ml-6">
         <div class="relative mr-3">
           <div>
