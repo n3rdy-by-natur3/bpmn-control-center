@@ -9,6 +9,7 @@ import NotFound from '../views/NotFoundView.vue';
 import InternalServerError from '../views/InternalServerError.vue';
 import Login from '../views/LoginView.vue';
 import { useApplicationStore } from '@/stores/ApplicationStore';
+import { useAuthStore } from '@/stores/AuthStore';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -76,12 +77,13 @@ const router = createRouter({
   ]
 });
 
-// have a look if there is a host selected
+// have a look if there is a host selected and if the user is logged in
 router.beforeEach(async (to) => {
   const store = useApplicationStore();
+  const authStore = useAuthStore();
+  const allowedSites = ['login', 'not-found', 'internal-server-error'];
 
-  if (!store.domain && to.name !== 'login') {
-    // TODO logout
+  if ((!authStore.isLoggedIn() ||!store.domain) && allowedSites.indexOf(to.name) === -1) {
     return '/login';
   }
 });
