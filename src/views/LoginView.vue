@@ -89,7 +89,7 @@
 
       // there is no explicit login endpoint, so we use /identity/verify where we have to provide the credentials twice :D
       await axios
-          .post(`/identity/verify`, { username: credentials.name, password: credentials.password }, config)
+          .post(`/identity/verify`, { "username": credentials.name, "password": credentials.password }, config)
           .then(async function (response) {
             authStore.setCredentials(credentials.name, credentials.password);
 
@@ -113,6 +113,9 @@
             if (error.response && error.response.status === 401) {
               console.log('401');
               node.setErrors(['Login fehlgeschlagen. Bitte überprüfen Sie Nutzername und Passwort.']);
+            } else if (error.response && error.response.status === 403) {
+              console.log('403');
+              node.setErrors(['Zugriff verweigert. Bitte wenden Sie sich an Ihren Camunda Admin.']);
             } else {
               console.log("status: " + error.response);
               node.setErrors(['Server Fehler. Bitte versuchen Sie es später nochmal.']);

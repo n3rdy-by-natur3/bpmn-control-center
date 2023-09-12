@@ -53,4 +53,15 @@ This is our way to provide security:
 
 Everything is done in the AuthStore.js.
 
-For sure with the Javascript code and access to someones browser you can steal the credentials. But we minimized the risk as much as we could.
+For sure with the Javascript code and access to some ones browser you can steal the credentials. But we minimized the risk as much as we could.
+
+### Authentication
+Authentication is done with the endpoint `/identity/verify`.
+If `authorization.enabled=true` the user needs the authorization to read her/his own user data.
+So the Camunda admin has to add under "User Authorization" following:
+- Type: ALLOW
+- User/Group: \<userId\>
+- Permissions: READ
+- Resource Id: \<userId\>
+
+

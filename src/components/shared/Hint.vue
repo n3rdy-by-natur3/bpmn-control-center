@@ -20,7 +20,6 @@
   import { ExclamationTriangleIcon, XCircleIcon, CheckCircleIcon, InformationCircleIcon } from '@heroicons/vue/24/solid'
 
   const types = { info: 'blue', warn: 'yellow', error: 'red', success: 'green' };
-  const test = 'red';
   const props = defineProps({
     text: { // text to show
       type: String,
