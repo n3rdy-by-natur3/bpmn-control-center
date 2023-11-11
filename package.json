@@ -10,7 +10,7 @@
     "@formkit/themes": "^0.16.5",
     "@formkit/vue": "^0.16.5",
     "@heroicons/vue": "^2.0.16",
-    "axios": "^1.2.1",
+    "axios": "^1.6.0",
     "bpmn-js": "^11.1.0",
     "crypto-js": "^4.1.1",
     "pinia": "^2.0.28",
